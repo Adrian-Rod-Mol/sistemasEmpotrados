@@ -4,7 +4,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -90,6 +90,15 @@ void OSWrappers::giveFrameBufferSemaphoreFromISR()
 void OSWrappers::signalVSync()
 {
     osMessageQueuePut(vsync_queue, &dummy, 0, 0);
+}
+
+/*
+  * Signal that the rendering of the frame has completed. Used by
+  * some systems to avoid using any previous vsync.
+  */
+void OSWrappers::signalRenderingDone()
+{
+  // Empty implementation for CMSIS V2
 }
 
 /*

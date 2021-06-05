@@ -4,7 +4,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -25,13 +25,12 @@
 
 using namespace touchgfx;
 
-namespace
-{
-// Use the section "TouchGFX_Framebuffer" in the linker to specify the placement of the buffer
-LOCATION_PRAGMA("TouchGFX_Framebuffer")
-uint32_t frameBuf[(240 * 320 * 2 + 3) / 4 * 2] LOCATION_ATTRIBUTE("TouchGFX_Framebuffer");
-static uint16_t lcd_int_active_line;
-static uint16_t lcd_int_porch_line;
+namespace {
+    // Use the section "TouchGFX_Framebuffer" in the linker to specify the placement of the buffer
+    LOCATION_PRAGMA("TouchGFX_Framebuffer")
+    uint32_t frameBuf[(240 * 320 * 2 + 3) / 4 * 2] LOCATION_ATTRIBUTE("TouchGFX_Framebuffer");
+    static uint16_t lcd_int_active_line;
+    static uint16_t lcd_int_porch_line;
 }
 
 void TouchGFXGeneratedHAL::initialize()
@@ -39,7 +38,7 @@ void TouchGFXGeneratedHAL::initialize()
     HAL::initialize();
 
     registerEventListener(*(Application::getInstance()));
-    setFrameBufferStartAddresses((void*)frameBuf, (void*)(frameBuf + sizeof(frameBuf) / (sizeof(uint32_t) * 2)), (void*)0);
+    setFrameBufferStartAddresses((void*)frameBuf, (void*)(frameBuf + sizeof(frameBuf)/(sizeof(uint32_t)*2)), (void*)0);
 }
 
 void TouchGFXGeneratedHAL::configureInterrupts()
@@ -86,17 +85,17 @@ void TouchGFXGeneratedHAL::setTFTFrameBuffer(uint16_t* adr)
 
 void TouchGFXGeneratedHAL::flushFrameBuffer(const touchgfx::Rect& rect)
 {
-    HAL::flushFrameBuffer(rect);
+  HAL::flushFrameBuffer(rect);
 }
 
 bool TouchGFXGeneratedHAL::blockCopy(void* RESTRICT dest, const void* RESTRICT src, uint32_t numBytes)
 {
-    return HAL::blockCopy(dest, src, numBytes);
+  return HAL::blockCopy(dest, src, numBytes);
 }
 
 extern "C"
 {
-    void HAL_LTDC_LineEventCallback(LTDC_HandleTypeDef* hltdc)
+    void HAL_LTDC_LineEventCallback(LTDC_HandleTypeDef *hltdc)
     {
         if (LTDC->LIPCR == lcd_int_active_line)
         {

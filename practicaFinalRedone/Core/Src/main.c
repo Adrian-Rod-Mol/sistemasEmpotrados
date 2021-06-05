@@ -72,14 +72,72 @@ LTDC_HandleTypeDef hltdc;
 
 SPI_HandleTypeDef hspi5;
 
+UART_HandleTypeDef huart1;
+
 SDRAM_HandleTypeDef hsdram1;
 
 /* Definitions for GUI_Task */
 osThreadId_t GUI_TaskHandle;
 const osThreadAttr_t GUI_Task_attributes = {
   .name = "GUI_Task",
+  .stack_size = 8192 * 4,
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 8192 * 4
+};
+/* Definitions for temperature */
+osThreadId_t temperatureHandle;
+const osThreadAttr_t temperature_attributes = {
+  .name = "temperature",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for cli_processing */
+osThreadId_t cli_processingHandle;
+const osThreadAttr_t cli_processing_attributes = {
+  .name = "cli_processing",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for frame */
+osThreadId_t frameHandle;
+const osThreadAttr_t frame_attributes = {
+  .name = "frame",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for temp_queue */
+osMessageQueueId_t temp_queueHandle;
+const osMessageQueueAttr_t temp_queue_attributes = {
+  .name = "temp_queue"
+};
+/* Definitions for charQueue */
+osMessageQueueId_t charQueueHandle;
+const osMessageQueueAttr_t charQueue_attributes = {
+  .name = "charQueue"
+};
+/* Definitions for messageQueue */
+osMessageQueueId_t messageQueueHandle;
+const osMessageQueueAttr_t messageQueue_attributes = {
+  .name = "messageQueue"
+};
+/* Definitions for frameQueue */
+osMessageQueueId_t frameQueueHandle;
+const osMessageQueueAttr_t frameQueue_attributes = {
+  .name = "frameQueue"
+};
+/* Definitions for framerateQueue */
+osMessageQueueId_t framerateQueueHandle;
+const osMessageQueueAttr_t framerateQueue_attributes = {
+  .name = "framerateQueue"
+};
+/* Definitions for camAccessMutex */
+osMutexId_t camAccessMutexHandle;
+const osMutexAttr_t camAccessMutex_attributes = {
+  .name = "camAccessMutex"
+};
+/* Definitions for readFrameEvent */
+osEventFlagsId_t readFrameEventHandle;
+const osEventFlagsAttr_t readFrameEvent_attributes = {
+  .name = "readFrameEvent"
 };
 /* USER CODE BEGIN PV */
 
@@ -94,7 +152,11 @@ static void MX_SPI5_Init(void);
 static void MX_FMC_Init(void);
 static void MX_LTDC_Init(void);
 static void MX_DMA2D_Init(void);
+static void MX_USART1_UART_Init(void);
 void TouchGFX_Task(void *argument);
+void temperature_task(void *argument);
+void cli_processing_task(void *argument);
+void FrameTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_SDRAM_CommandTypeDef *Command);
@@ -169,6 +231,7 @@ int main(void)
   MX_FMC_Init();
   MX_LTDC_Init();
   MX_DMA2D_Init();
+  MX_USART1_UART_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
 
@@ -176,6 +239,9 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();
+  /* Create the mutex(es) */
+  /* creation of camAccessMutex */
+  camAccessMutexHandle = osMutexNew(&camAccessMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -189,6 +255,22 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of temp_queue */
+  temp_queueHandle = osMessageQueueNew (16, sizeof(float), &temp_queue_attributes);
+
+  /* creation of charQueue */
+  charQueueHandle = osMessageQueueNew (20, sizeof(uint8_t), &charQueue_attributes);
+
+  /* creation of messageQueue */
+  messageQueueHandle = osMessageQueueNew (6, sizeof(uint32_t), &messageQueue_attributes);
+
+  /* creation of frameQueue */
+  frameQueueHandle = osMessageQueueNew (5, sizeof(float), &frameQueue_attributes);
+
+  /* creation of framerateQueue */
+  framerateQueueHandle = osMessageQueueNew (6, sizeof(uint32_t), &framerateQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -197,9 +279,25 @@ int main(void)
   /* creation of GUI_Task */
   GUI_TaskHandle = osThreadNew(TouchGFX_Task, NULL, &GUI_Task_attributes);
 
+  /* creation of temperature */
+  temperatureHandle = osThreadNew(temperature_task, NULL, &temperature_attributes);
+
+  /* creation of cli_processing */
+  cli_processingHandle = osThreadNew(cli_processing_task, NULL, &cli_processing_attributes);
+
+  /* creation of frame */
+  frameHandle = osThreadNew(FrameTask, NULL, &frame_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
+  /* creation of readFrameEvent */
+  readFrameEventHandle = osEventFlagsNew(&readFrameEvent_attributes);
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
   osKernelStart();
@@ -390,7 +488,6 @@ static void MX_LTDC_Init(void)
   /* USER CODE END LTDC_Init 0 */
 
   LTDC_LayerCfgTypeDef pLayerCfg = {0};
-  LTDC_LayerCfgTypeDef pLayerCfg1 = {0};
 
   /* USER CODE BEGIN LTDC_Init 1 */
 
@@ -431,24 +528,6 @@ static void MX_LTDC_Init(void)
   pLayerCfg.Backcolor.Green = 0;
   pLayerCfg.Backcolor.Red = 0;
   if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  pLayerCfg1.WindowX0 = 0;
-  pLayerCfg1.WindowX1 = 0;
-  pLayerCfg1.WindowY0 = 0;
-  pLayerCfg1.WindowY1 = 0;
-  pLayerCfg1.Alpha = 0;
-  pLayerCfg1.Alpha0 = 0;
-  pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
-  pLayerCfg1.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-  pLayerCfg1.FBStartAdress = 0;
-  pLayerCfg1.ImageWidth = 0;
-  pLayerCfg1.ImageHeight = 0;
-  pLayerCfg1.Backcolor.Blue = 0;
-  pLayerCfg1.Backcolor.Green = 0;
-  pLayerCfg1.Backcolor.Red = 0;
-  if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg1, 1) != HAL_OK)
   {
     Error_Handler();
   }
@@ -500,6 +579,39 @@ static void MX_SPI5_Init(void)
   
 
   /* USER CODE END SPI5_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -939,7 +1051,61 @@ __weak void TouchGFX_Task(void *argument)
   /* USER CODE END 5 */
 }
 
+/* USER CODE BEGIN Header_temperature_task */
 /**
+* @brief Function implementing the temperature thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_temperature_task */
+__weak void temperature_task(void *argument)
+{
+  /* USER CODE BEGIN temperature_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END temperature_task */
+}
+
+/* USER CODE BEGIN Header_cli_processing_task */
+/**
+* @brief Function implementing the cli_processing thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_cli_processing_task */
+__weak void cli_processing_task(void *argument)
+{
+  /* USER CODE BEGIN cli_processing_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END cli_processing_task */
+}
+
+/* USER CODE BEGIN Header_FrameTask */
+/**
+* @brief Function implementing the frame thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_FrameTask */
+__weak void FrameTask(void *argument)
+{
+  /* USER CODE BEGIN FrameTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END FrameTask */
+}
+
+ /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM6 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
