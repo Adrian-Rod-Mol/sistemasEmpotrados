@@ -25,10 +25,13 @@ extern "C" {
 Model::Model() : modelListener(0)
 {
 	this->fps		= 10;
-	this->maxTemp	= 35;
-	this->minTemp	= 20;
+	this->maxTemp	= 57;
+	this->minTemp	= 6;
 
 	this->camState = false;
+
+	this->frame[0] = 10;
+	for (int i = 1; i < 64; i++) { this->frame[i] = this->frame[i - 1] + 0.5; }
 }
 
 /**
@@ -47,8 +50,8 @@ void Model::tick()
 
   App_Message *app_message = NULL;
 
-  this->frame[0] = 20;
-  for (int i = 1; i < 64; i++) { this->frame[i] = this->frame[i - 1] + 0.25; }
+  osDelay(10);
+
   this->modelListener->SetBitmapValues(this->frame);
 
   os_status = osMessageQueueGet(temp_queueHandle, &temperature, 0, 10);

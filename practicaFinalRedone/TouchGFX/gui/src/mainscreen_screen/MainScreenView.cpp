@@ -65,9 +65,9 @@ void MainScreenView::setupScreen()
 			}
 
 			//BGR
-			pal[i*3 + 0] = R;
+			pal[i*3 + 0] = B;
 			pal[i*3 + 1] = G;
-			pal[i*3 + 2] = B;
+			pal[i*3 + 2] = R;
 		}
 
 	}
@@ -94,48 +94,6 @@ void MainScreenView::ToggleCamBitmap()
  */
 void MainScreenView::HandleCamBitmap()
 {
-	uint8_t* data = Bitmap::dynamicBitmapGetAddress(this->camImage.getBitmap());
-
-	uint8_t* pixel = data;
-	//make colored rows
-	for (int y = 5; y<245; y++)
-	{
-		for (int x = 0; x<240; x++) {
-			pixel[(y - 5)*pxWidth + x] = y;
-		}
-
-	}
-
-	uint32_t byteSize = 240*240;
-	byteSize = ((byteSize + 3) & ~3);
-
-	//Palette starts four bytes after the pixels
-	uint8_t* pal = (data + byteSize + 4);
-
-	uint8_t R = 0;
-	uint8_t G = 0;
-	uint8_t B = 0xFF;
-
-	//Make palette with 256 colors from green to red to green
-	for (int i = 0; i<256; i++)
-	{
-		if ((i > 0) && (i < 64)) {
-			G = G + 4;
-		} else if ((i >= 64) && (i < 127)) {
-			B = B - 4;
-		} else if ((i > 127) && (i < 191)) {
-			R = R + 4;
-		}  else if ((i >= 191) && (i < 255)) {
-			G = G - 4;
-		}
-
-		//BGR
-		pal[i*3 + 0] = R;
-		pal[i*3 + 1] = G;
-		pal[i*3 + 2] = B;
-	}
-
-
 	camImage.invalidate();
 }
 
