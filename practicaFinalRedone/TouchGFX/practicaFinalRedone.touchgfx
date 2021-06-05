@@ -2,9 +2,874 @@
   "Application": {
     "Screens": [
       {
-        "Components": [],
-        "Interactions": [],
+        "Components": [
+          {
+            "Type": "TiledImage",
+            "FileName": "__designer\\Dark_Backgrounds_main_bg_portrait_240x320px.png",
+            "Alpha": 255,
+            "OffsetX": 0,
+            "OffsetY": 0,
+            "Name": "backGround",
+            "X": 0,
+            "Y": 0,
+            "Width": 240,
+            "Height": 320,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "CustomContainerDefinitionName": "TopBar",
+            "Type": "CustomContainerInstance",
+            "Name": "dataBarMain",
+            "X": 0,
+            "Y": 0,
+            "Width": 240,
+            "Height": 30,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "__designer\\Blue_Icons_Settings_32.png",
+                "IconPressed": "__designer\\Blue_Icons_Settings_32.png"
+              },
+              {
+                "Type": "ImageButtonStyle",
+                "X": 0,
+                "Y": 0,
+                "LockFlexButtonToImageSize": false,
+                "ImageReleased": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+                "ImagePressed": "__designer\\Blue_Backgrounds_main_bg_portrait_texture_240x320px.png"
+              }
+            ],
+            "Name": "confButton",
+            "X": 0,
+            "Y": 270,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 10,
+                "Y": 5,
+                "IconReleased": "camera.png",
+                "IconPressed": "camera.png"
+              },
+              {
+                "Type": "ImageButtonStyle",
+                "X": 0,
+                "Y": 0,
+                "LockFlexButtonToImageSize": false,
+                "ImageReleased": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+                "ImagePressed": "__designer\\Blue_Backgrounds_main_bg_portrait_texture_240x320px.png"
+              }
+            ],
+            "Name": "camButton",
+            "X": 120,
+            "Y": 270,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "target-32px.png",
+                "IconPressed": "target-32px.png"
+              },
+              {
+                "Type": "ImageButtonStyle",
+                "X": 0,
+                "Y": 0,
+                "LockFlexButtonToImageSize": false,
+                "ImageReleased": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+                "ImagePressed": "__designer\\Blue_Backgrounds_main_bg_portrait_texture_240x320px.png"
+              }
+            ],
+            "Name": "targButton",
+            "X": 180,
+            "Y": 270,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ToggleButtonTrigger",
+              "InitalStatePressed": false
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "play_circle_filled_round_32px.png",
+                "IconPressed": "stop_circle_round_32px.png"
+              },
+              {
+                "Type": "ImageButtonStyle",
+                "X": 0,
+                "Y": 0,
+                "LockFlexButtonToImageSize": false,
+                "ImageReleased": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+                "ImagePressed": "__designer\\Blue_Backgrounds_main_bg_portrait_texture_240x320px.png"
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "X": 0,
+                "Y": 0,
+                "Width": 60,
+                "Height": 50,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 5,
+                "ColorReleased": {
+                  "Red": 0,
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Red": 0,
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Red": 0,
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ],
+            "Name": "playButton",
+            "X": 60,
+            "Y": 270,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "ScalableImage",
+            "Filename": "",
+            "Alpha": 255,
+            "ScalingAlgorithm": "Nearest-neighbor",
+            "Name": "camImage",
+            "X": 0,
+            "Y": 30,
+            "Width": 240,
+            "Height": 240,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "Image",
+            "RelativeFilename": "target-20px.png",
+            "Alpha": 255,
+            "Name": "targetPoint",
+            "X": 110,
+            "Y": 140,
+            "Width": 20,
+            "Height": 20,
+            "Visible": false,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TextArea",
+            "TextId": "SingleUseId7",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 0,
+              "Green": 0,
+              "Blue": 0
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Wildcard1": {
+              "TextId": "SingleUseId8",
+              "UseBuffer": true,
+              "BufferSize": 6
+            },
+            "Name": "targetTemp",
+            "X": 93,
+            "Y": 230,
+            "Width": 55,
+            "Height": 25,
+            "Visible": false,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "Interaction_confButton",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "confButton"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionWipe",
+              "ScreenTransitionDirection": "West",
+              "ActionComponent": "ConfScreen"
+            }
+          },
+          {
+            "InteractionName": "Interaction_playButton",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "playButton"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "ToggleCamBitmap"
+            }
+          },
+          {
+            "InteractionName": "Interaction_camButton",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "camButton"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "CamScreenshot"
+            }
+          },
+          {
+            "InteractionName": "Interaction_targButton",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "targButton"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "ToggleTargetTemp"
+            }
+          }
+        ],
         "Name": "MainScreen",
+        "OverrideDefaultBufferSize": false,
+        "CanvasBufferSize": 0
+      },
+      {
+        "Components": [
+          {
+            "Type": "TiledImage",
+            "FileName": "__designer\\Dark_Backgrounds_main_bg_portrait_240x320px.png",
+            "Alpha": 255,
+            "OffsetX": 0,
+            "OffsetY": 0,
+            "Name": "backGround",
+            "X": 0,
+            "Y": 0,
+            "Width": 240,
+            "Height": 320,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "CustomContainerDefinitionName": "TopBar",
+            "Type": "CustomContainerInstance",
+            "Name": "dataBarConf",
+            "X": 0,
+            "Y": 0,
+            "Width": 240,
+            "Height": 30,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TiledImage",
+            "FileName": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+            "Alpha": 255,
+            "OffsetX": 0,
+            "OffsetY": 0,
+            "Name": "botBackground",
+            "X": 0,
+            "Y": 270,
+            "Width": 240,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "__designer\\Blue_Icons_Home_32.png",
+                "IconPressed": "__designer\\Blue_Icons_Home_32.png"
+              }
+            ],
+            "Name": "homeButon",
+            "X": 0,
+            "Y": 270,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TiledImage",
+            "FileName": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+            "Alpha": 255,
+            "OffsetX": 0,
+            "OffsetY": 0,
+            "Name": "botSlide",
+            "X": 5,
+            "Y": 197,
+            "Width": 230,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TiledImage",
+            "FileName": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+            "Alpha": 255,
+            "OffsetX": 0,
+            "OffsetY": 0,
+            "Name": "midSlide",
+            "X": 5,
+            "Y": 125,
+            "Width": 230,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TiledImage",
+            "FileName": "__designer\\Blue_Backgrounds_main_bg_portrait_240x320px.png",
+            "Alpha": 255,
+            "OffsetX": 0,
+            "OffsetY": 0,
+            "Name": "topSlide",
+            "X": 5,
+            "Y": 53,
+            "Width": 230,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "remove_circle_outline_32px.png",
+                "IconPressed": "remove_circle_outline_32px.png"
+              }
+            ],
+            "Name": "botMinus",
+            "X": 5,
+            "Y": 197,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "remove_circle_outline_32px.png",
+                "IconPressed": "remove_circle_outline_32px.png"
+              }
+            ],
+            "Name": "midMinus",
+            "X": 5,
+            "Y": 125,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "remove_circle_outline_32px.png",
+                "IconPressed": "remove_circle_outline_32px.png"
+              }
+            ],
+            "Name": "topMinus",
+            "X": 5,
+            "Y": 53,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "add_circle_outline_32px.png",
+                "IconPressed": "add_circle_outline_32px.png"
+              }
+            ],
+            "Name": "botPlus",
+            "X": 175,
+            "Y": 197,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "add_circle_outline_32px.png",
+                "IconPressed": "add_circle_outline_32px.png"
+              }
+            ],
+            "Name": "midPlus",
+            "X": 175,
+            "Y": 125,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "FlexButton",
+            "Alpha": 255,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 14,
+                "Y": 9,
+                "IconReleased": "add_circle_outline_32px.png",
+                "IconPressed": "add_circle_outline_32px.png"
+              }
+            ],
+            "Name": "topPlus",
+            "X": 175,
+            "Y": 53,
+            "Width": 60,
+            "Height": 50,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TextArea",
+            "TextId": "SingleUseId11",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 0,
+              "Green": 0,
+              "Blue": 0
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Name": "minTempDesc",
+            "X": 66,
+            "Y": 203,
+            "Width": 108,
+            "Height": 13,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TextArea",
+            "TextId": "SingleUseId10",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 0,
+              "Green": 0,
+              "Blue": 0
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Name": "maxTempDesc",
+            "X": 65,
+            "Y": 135,
+            "Width": 111,
+            "Height": 13,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TextArea",
+            "TextId": "SingleUseId9",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 0,
+              "Green": 0,
+              "Blue": 0
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Name": "camDesc",
+            "X": 70,
+            "Y": 59,
+            "Width": 100,
+            "Height": 13,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TextArea",
+            "TextId": "SingleUseId12",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 0,
+              "Green": 0,
+              "Blue": 0
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Wildcard1": {
+              "TextId": "SingleUseId13",
+              "UseBuffer": true,
+              "BufferSize": 3
+            },
+            "Name": "fpsConf",
+            "X": 85,
+            "Y": 72,
+            "Width": 70,
+            "Height": 25,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TextArea",
+            "TextId": "SingleUseId14",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 0,
+              "Green": 0,
+              "Blue": 0
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Wildcard1": {
+              "TextId": "SingleUseId15",
+              "UseBuffer": true,
+              "BufferSize": 3
+            },
+            "Name": "maxTempConf",
+            "X": 99,
+            "Y": 148,
+            "Width": 43,
+            "Height": 25,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Type": "TextArea",
+            "TextId": "SingleUseId16",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 0,
+              "Green": 0,
+              "Blue": 0
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Wildcard1": {
+              "TextId": "SingleUseId17",
+              "UseBuffer": true,
+              "BufferSize": 3
+            },
+            "Name": "minTempConf",
+            "X": 99,
+            "Y": 216,
+            "Width": 43,
+            "Height": 25,
+            "Visible": true,
+            "LockPosition": false,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "Interaction_homeButton",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "homeButon"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionWipe",
+              "ScreenTransitionDirection": "East",
+              "ActionComponent": "MainScreen"
+            }
+          },
+          {
+            "InteractionName": "Interaction_topPlus",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "topPlus"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "PlusFPS"
+            }
+          },
+          {
+            "InteractionName": "Interaction_midPlus",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "midPlus"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "PlusMaxTemp"
+            }
+          },
+          {
+            "InteractionName": "Interaction_botPlus",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "botPlus"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "PlusMinTemp"
+            }
+          },
+          {
+            "InteractionName": "Interaction_topMinus",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "topMinus"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "MinusFPS"
+            }
+          },
+          {
+            "InteractionName": "Interaction_midMinus",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "midMinus"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "MinusMaxTemp"
+            }
+          },
+          {
+            "InteractionName": "Interaction_botMinus",
+            "HasCompletedTrigger": false,
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "botMinus"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "MinusMinTemp"
+            }
+          }
+        ],
+        "Name": "ConfScreen",
         "OverrideDefaultBufferSize": false,
         "CanvasBufferSize": 0
       }
@@ -149,6 +1014,50 @@
       },
       {
         "TextEntryId": "SingleUseId6",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId7",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId8",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId9",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId10",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId11",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId12",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId13",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId14",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId15",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId16",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId17",
         "IsResource": false
       }
     ],

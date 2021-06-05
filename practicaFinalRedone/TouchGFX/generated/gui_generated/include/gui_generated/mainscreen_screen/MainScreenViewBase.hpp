@@ -8,6 +8,12 @@
 #include <mvp/View.hpp>
 #include <gui/mainscreen_screen/MainScreenPresenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
+#include <touchgfx/widgets/TiledImage.hpp>
+#include <gui/containers/TopBar.hpp>
+#include <touchgfx/containers/buttons/Buttons.hpp>
+#include <touchgfx/widgets/ScalableImage.hpp>
+#include <touchgfx/widgets/Image.hpp>
+#include <touchgfx/widgets/TextAreaWithWildcard.hpp>
 
 class MainScreenViewBase : public touchgfx::View<MainScreenPresenter>
 {
@@ -16,13 +22,60 @@ public:
     virtual ~MainScreenViewBase() {}
     virtual void setupScreen();
 
+    /*
+     * Virtual Action Handlers
+     */
+    virtual void ToggleCamBitmap()
+    {
+        // Override and implement this function in MainScreen
+    }
+
+    virtual void CamScreenshot()
+    {
+        // Override and implement this function in MainScreen
+    }
+
+    virtual void ToggleTargetTemp()
+    {
+        // Override and implement this function in MainScreen
+    }
+
 protected:
     FrontendApplication& application() {
         return *static_cast<FrontendApplication*>(touchgfx::Application::getInstance());
     }
+
+    /*
+     * Member Declarations
+     */
     touchgfx::Box __background;
+    touchgfx::TiledImage backGround;
+    TopBar dataBarMain;
+    touchgfx::IconButtonStyle< touchgfx::ImageButtonStyle< touchgfx::ClickButtonTrigger > > confButton;
+    touchgfx::IconButtonStyle< touchgfx::ImageButtonStyle< touchgfx::ClickButtonTrigger > > camButton;
+    touchgfx::IconButtonStyle< touchgfx::ImageButtonStyle< touchgfx::ClickButtonTrigger > > targButton;
+    touchgfx::IconButtonStyle< touchgfx::ImageButtonStyle< touchgfx::BoxWithBorderButtonStyle< touchgfx::ToggleButtonTrigger > > > playButton;
+    touchgfx::ScalableImage camImage;
+    touchgfx::Image targetPoint;
+    touchgfx::TextAreaWithOneWildcard targetTemp;
+
+    /*
+     * Wildcard Buffers
+     */
+    static const uint16_t TARGETTEMP_SIZE = 6;
+    touchgfx::Unicode::UnicodeChar targetTempBuffer[TARGETTEMP_SIZE];
 
 private:
+
+    /*
+     * Callback Declarations
+     */
+    touchgfx::Callback<MainScreenViewBase, const touchgfx::AbstractButtonContainer&> flexButtonCallback;
+
+    /*
+     * Callback Handler Declarations
+     */
+    void flexButtonCallbackHandler(const touchgfx::AbstractButtonContainer& src);
 
 };
 

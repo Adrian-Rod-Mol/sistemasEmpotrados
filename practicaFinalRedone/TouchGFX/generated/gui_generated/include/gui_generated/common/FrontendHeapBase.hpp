@@ -9,11 +9,15 @@
 #include <mvp/MVPHeap.hpp>
 
 #include <touchgfx/transitions/NoTransition.hpp>
+#include <touchgfx/transitions/WipeTransition.hpp>
+
 #include <gui/common/FrontendApplication.hpp>
 #include <gui/model/Model.hpp>
 
 #include <gui/mainscreen_screen/MainScreenView.hpp>
 #include <gui/mainscreen_screen/MainScreenPresenter.hpp>
+#include <gui/confscreen_screen/ConfScreenView.hpp>
+#include <gui/confscreen_screen/ConfScreenPresenter.hpp>
 
 
 /**
@@ -37,7 +41,8 @@ public:
      * @note All view types used in the application MUST be added to this list!
      */
     typedef touchgfx::meta::TypeList< MainScreenView,
-            touchgfx::meta::Nil
+            touchgfx::meta::TypeList< ConfScreenView,
+            touchgfx::meta::Nil >
             > GeneratedViewTypes;
 
     /**
@@ -50,7 +55,8 @@ public:
      * @note All presenter types used in the application MUST be added to this list!
      */
     typedef touchgfx::meta::TypeList< MainScreenPresenter,
-            touchgfx::meta::Nil
+            touchgfx::meta::TypeList< ConfScreenPresenter,
+            touchgfx::meta::Nil >
             > GeneratedPresenterTypes;
 
     /**
@@ -63,7 +69,9 @@ public:
      * @note All transition types used in the application MUST be added to this list!
      */
     typedef touchgfx::meta::TypeList< touchgfx::NoTransition,
-            touchgfx::meta::Nil
+            touchgfx::meta::TypeList< WipeTransition<WEST>,
+            touchgfx::meta::TypeList< WipeTransition<EAST>,
+            touchgfx::meta::Nil > >
             > GeneratedTransitionTypes;
 
     /**

@@ -11,6 +11,8 @@
 #include <platform/driver/lcd/LCD16bpp.hpp>
 #include <gui/mainscreen_screen/MainScreenView.hpp>
 #include <gui/mainscreen_screen/MainScreenPresenter.hpp>
+#include <gui/confscreen_screen/ConfScreenView.hpp>
+#include <gui/confscreen_screen/ConfScreenPresenter.hpp>
 
 using namespace touchgfx;
 
@@ -21,6 +23,7 @@ FrontendApplicationBase::FrontendApplicationBase(Model& m, FrontendHeap& heap)
       model(m)
 {
     touchgfx::HAL::getInstance()->setDisplayOrientation(touchgfx::ORIENTATION_PORTRAIT);
+    touchgfx::Texts::setLanguage(GB);
     reinterpret_cast<touchgfx::LCD16bpp&>(touchgfx::HAL::lcd()).enableTextureMapperAll();
 }
 
@@ -39,4 +42,28 @@ void FrontendApplicationBase::gotoMainScreenScreenNoTransition()
 void FrontendApplicationBase::gotoMainScreenScreenNoTransitionImpl()
 {
     touchgfx::makeTransition<MainScreenView, MainScreenPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+void FrontendApplicationBase::gotoMainScreenScreenWipeTransitionEast()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoMainScreenScreenWipeTransitionEastImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoMainScreenScreenWipeTransitionEastImpl()
+{
+    touchgfx::makeTransition<MainScreenView, MainScreenPresenter, touchgfx::WipeTransition<EAST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// ConfScreen
+
+void FrontendApplicationBase::gotoConfScreenScreenWipeTransitionWest()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoConfScreenScreenWipeTransitionWestImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoConfScreenScreenWipeTransitionWestImpl()
+{
+    touchgfx::makeTransition<ConfScreenView, ConfScreenPresenter, touchgfx::WipeTransition<WEST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
 }

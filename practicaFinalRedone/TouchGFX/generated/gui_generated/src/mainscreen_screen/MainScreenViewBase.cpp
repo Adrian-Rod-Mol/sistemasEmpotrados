@@ -3,17 +3,114 @@
 /*********************************************************************************/
 #include <gui_generated/mainscreen_screen/MainScreenViewBase.hpp>
 #include <touchgfx/Color.hpp>
+#include "BitmapDatabase.hpp"
+#include <texts/TextKeysAndLanguages.hpp>
 
-MainScreenViewBase::MainScreenViewBase()
+MainScreenViewBase::MainScreenViewBase() :
+    flexButtonCallback(this, &MainScreenViewBase::flexButtonCallbackHandler)
 {
 
     __background.setPosition(0, 0, 240, 320);
     __background.setColor(touchgfx::Color::getColorFrom24BitRGB(0, 0, 0));
 
+    backGround.setBitmap(touchgfx::Bitmap(BITMAP_DARK_BACKGROUNDS_MAIN_BG_PORTRAIT_240X320PX_ID));
+    backGround.setPosition(0, 0, 240, 320);
+    backGround.setOffset(0, 0);
+
+    dataBarMain.setXY(0, 0);
+
+    confButton.setBitmaps(Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_240X320PX_ID), Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_TEXTURE_240X320PX_ID));
+    confButton.setBitmapXY(0, 0);
+    confButton.setIconBitmaps(Bitmap(BITMAP_BLUE_ICONS_SETTINGS_32_ID), Bitmap(BITMAP_BLUE_ICONS_SETTINGS_32_ID));
+    confButton.setIconXY(14, 9);
+    confButton.setPosition(0, 270, 60, 50);
+    confButton.setAction(flexButtonCallback);
+
+    camButton.setBitmaps(Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_240X320PX_ID), Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_TEXTURE_240X320PX_ID));
+    camButton.setBitmapXY(0, 0);
+    camButton.setIconBitmaps(Bitmap(BITMAP_CAMERA_ID), Bitmap(BITMAP_CAMERA_ID));
+    camButton.setIconXY(10, 5);
+    camButton.setPosition(120, 270, 60, 50);
+    camButton.setAction(flexButtonCallback);
+
+    targButton.setBitmaps(Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_240X320PX_ID), Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_TEXTURE_240X320PX_ID));
+    targButton.setBitmapXY(0, 0);
+    targButton.setIconBitmaps(Bitmap(BITMAP_TARGET_32PX_ID), Bitmap(BITMAP_TARGET_32PX_ID));
+    targButton.setIconXY(14, 9);
+    targButton.setPosition(180, 270, 60, 50);
+    targButton.setAction(flexButtonCallback);
+
+    playButton.setBoxWithBorderPosition(0, 0, 60, 50);
+    playButton.setBorderSize(5);
+    playButton.setBoxWithBorderColors(touchgfx::Color::getColorFrom24BitRGB(0, 102, 153), touchgfx::Color::getColorFrom24BitRGB(0, 153, 204), touchgfx::Color::getColorFrom24BitRGB(0, 51, 102), touchgfx::Color::getColorFrom24BitRGB(51, 102, 153));
+    playButton.setBitmaps(Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_240X320PX_ID), Bitmap(BITMAP_BLUE_BACKGROUNDS_MAIN_BG_PORTRAIT_TEXTURE_240X320PX_ID));
+    playButton.setBitmapXY(0, 0);
+    playButton.setIconBitmaps(Bitmap(BITMAP_PLAY_CIRCLE_FILLED_ROUND_32PX_ID), Bitmap(BITMAP_STOP_CIRCLE_ROUND_32PX_ID));
+    playButton.setIconXY(14, 9);
+    playButton.setPosition(60, 270, 60, 50);
+    playButton.setAction(flexButtonCallback);
+
+    camImage.setPosition(0, 30, 240, 240);
+    camImage.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+
+    targetPoint.setXY(110, 140);
+    targetPoint.setVisible(false);
+    targetPoint.setBitmap(touchgfx::Bitmap(BITMAP_TARGET_20PX_ID));
+
+    targetTemp.setXY(93, 230);
+    targetTemp.setVisible(false);
+    targetTemp.setColor(touchgfx::Color::getColorFrom24BitRGB(0, 0, 0));
+    targetTemp.setLinespacing(0);
+    Unicode::snprintf(targetTempBuffer, TARGETTEMP_SIZE, "%s", touchgfx::TypedText(T_SINGLEUSEID8).getText());
+    targetTemp.setWildcard(targetTempBuffer);
+    targetTemp.resizeToCurrentText();
+    targetTemp.setTypedText(touchgfx::TypedText(T_SINGLEUSEID7));
+
     add(__background);
+    add(backGround);
+    add(dataBarMain);
+    add(confButton);
+    add(camButton);
+    add(targButton);
+    add(playButton);
+    add(camImage);
+    add(targetPoint);
+    add(targetTemp);
 }
 
 void MainScreenViewBase::setupScreen()
 {
+    dataBarMain.initialize();
+}
 
+void MainScreenViewBase::flexButtonCallbackHandler(const touchgfx::AbstractButtonContainer& src)
+{
+    if (&src == &confButton)
+    {
+        //Interaction_confButton
+        //When confButton clicked change screen to ConfScreen
+        //Go to ConfScreen with screen transition towards West
+        application().gotoConfScreenScreenWipeTransitionWest();
+    }
+    else if (&src == &camButton)
+    {
+        //Interaction_camButton
+        //When camButton clicked call virtual function
+        //Call CamScreenshot
+        CamScreenshot();
+    }
+    else if (&src == &targButton)
+    {
+        //Interaction_targButton
+        //When targButton clicked call virtual function
+        //Call ToggleTargetTemp
+        ToggleTargetTemp();
+    }
+    else if (&src == &playButton)
+    {
+        //Interaction_playButton
+        //When playButton clicked call virtual function
+        //Call ToggleCamBitmap
+        ToggleCamBitmap();
+    }
 }
