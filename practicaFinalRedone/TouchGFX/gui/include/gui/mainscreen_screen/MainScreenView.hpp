@@ -11,6 +11,12 @@ public:
     virtual ~MainScreenView() {}
     virtual void setupScreen();
     virtual void tearDownScreen();
+
+    void ToggleCamBitmap();
+
+	void HandleCamBitmap();
+	void HandleCamState	(bool state);
+
 protected:
 };
 

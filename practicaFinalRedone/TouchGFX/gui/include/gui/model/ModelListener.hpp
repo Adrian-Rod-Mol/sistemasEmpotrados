@@ -10,11 +10,14 @@ public:
     
     virtual ~ModelListener() {}
 
-    virtual void set_new_temperature(float temperature){}
+    virtual void set_new_temperature(float temperature)	{}
+
+    virtual void SetBitmapVisibility(bool state)		{}
 
 	virtual void SetFPSValue		(uint8_t fps) 		{}
 	virtual void SetMaxTempValue	(uint8_t maxTemp)	{}
 	virtual void SetMinTempValue	(uint8_t minTemp)	{}
+
 
 
     void bind(Model* m)

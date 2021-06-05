@@ -149,13 +149,7 @@ void Model::SendCamFrame(float *frame)
 /***************************************************************/
 void Model::ChangeBitmapState(bool state)
 {
-	if (state) {
-		this->camState = false;
-
-	} else {
-		this->camState = true;
-
-	}
+	this->camState = !(this->camState);
 }
 
 /***************************************************************/

@@ -27,6 +27,12 @@ public:
 
     virtual ~MainScreenPresenter() {};
 
+    void HandleBitmapVisibility	(bool state);
+
+    void SetBitmapValues();
+	void SetBitmapVisibility	(bool state);
+
+
 private:
     MainScreenPresenter();
 
