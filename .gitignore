@@ -1,0 +1,33 @@
+# Build Result
+
+*.o
+*.su
+*.d
+
+
+**/Debug/**
+[Bb]uild/
+
+## Editores de Texto
+*.swp
+*.mk
+
+*.prefs
+
+# Ejecucion del firmware
+*.launch
+
+*.cache
+
+# Designer
+simulator/
+
+#Windows
+Thumbs.db
+thumbs.db:encryptable
+
+#Mac OSX
+.DS_Store
+
+
+
