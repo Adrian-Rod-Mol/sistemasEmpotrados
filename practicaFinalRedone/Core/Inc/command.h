@@ -1,0 +1,49 @@
+/*
+ * command.h
+ *
+ *  Created on: 30 abr. 2021
+ *      Author: edavidfs
+ */
+
+#ifndef APPLICATION_USER_COMMAND_H_
+#define APPLICATION_USER_COMMAND_H_
+
+#define CLI_UNKNOWN_CODE    0
+#define CLI_HELP_CODE       1
+#define CLI_CAM_TEMP_CODE   2
+#define CLI_CAM_FRAME_CODE  3
+
+#define APP_UNKNOWN_COMMAND 0
+#define APP_HELP_COMMAND    1
+#define APP_SEND_CAM_TEMP   2
+#define APP_SEND_CAM_FRAME  3
+
+typedef void *(SFPointer)(void);
+
+typedef struct{
+  char *key;                  /**< cadena de caracteres que describe al comando */
+  int command_code;           /**< Codigo identificativo del comando */
+  int has_parameter;          /**< 1 si posee datos adicionales 0 si no */
+  char *description;          /**< Descripción del comando mostrado al solicitar la ayuda */
+  SFPointer *service_routine; /**< Rutina de servicio que se ejecuta al recibir el comando */
+} CLI_Command;
+
+
+/** @brief  Mensaje interno de la Aplicación.
+ *          Esta estructura representa los comandos que realiza la aplicación.
+ *          El Modelo recibe estos mensajes desde la cola de entrada y los procesa
+ */
+typedef struct{
+    int8_t  message_code;   /**< Código del mensaje */
+    uint8_t data[20];       /**< Atributos */
+}App_Message;
+
+
+extern CLI_Command cli_command_list[];
+
+void unknown_cli_cmd(void);
+void PrintSeparator(void);
+void PrintHeader(char section);
+void PrintPointer(void);
+
+#endif /* APPLICATION_USER_COMMAND_H_ */
