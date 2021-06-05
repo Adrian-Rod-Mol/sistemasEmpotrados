@@ -29,7 +29,7 @@ public:
 
     void HandleBitmapVisibility	(bool state);
 
-    void SetBitmapValues();
+    void SetBitmapValues		(float *frame);
 	void SetBitmapVisibility	(bool state);
 
 

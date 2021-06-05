@@ -40,7 +40,8 @@ protected:
 
     float temperature;
 
-	bool camState;
+	bool 	camState;
+	float	frame[64];
 
 	uint8_t fps;
 	uint8_t maxTemp;

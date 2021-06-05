@@ -47,17 +47,18 @@ void Model::tick()
 
   App_Message *app_message = NULL;
 
+  this->frame[0] = 20;
+  for (int i = 1; i < 64; i++) { this->frame[i] = this->frame[i - 1] + 0.25; }
+  this->modelListener->SetBitmapValues(this->frame);
+
   os_status = osMessageQueueGet(temp_queueHandle, &temperature, 0, 10);
   if (os_status == osOK) {
 	this->temperature = temperature;
 	//this->modelListener->set_new_temperature(temperature);
   }
 
-  // [x] 16 : Extraer el mensaje de la cola app_msg_queue
   os_msg_status = osMessageQueueGet(messageQueueHandle, &app_message, 0, 10);
   if (os_msg_status == osOK) {
-	  // [x] 17: ejecutar el método correspondiente al mensaje recibido,
-	  //          Ejemplo si se recibe el codigo de mensaje APP_CAM_TEMP
 	  switch(app_message->message_code)
 	  {
 	  case APP_UNKNOWN_COMMAND:
@@ -76,7 +77,6 @@ void Model::tick()
 		  break;
 	  }
 
-	  // [x] 18: Liberar el espacio de memoria del POOL de memoria mediante osMemoryPoolFree()
 	  os_pool_status = osMemoryPoolFree(command_MemPool, app_message);
 	  if (os_pool_status != osOK) printf("Pool Failure\r\n");
 	  PrintPointer();

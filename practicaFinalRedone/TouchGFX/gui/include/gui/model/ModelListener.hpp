@@ -13,6 +13,7 @@ public:
     virtual void set_new_temperature(float temperature)	{}
 
     virtual void SetBitmapVisibility(bool state)		{}
+    virtual void SetBitmapValues	(float *frame)		{}
 
 	virtual void SetFPSValue		(uint8_t fps) 		{}
 	virtual void SetMaxTempValue	(uint8_t maxTemp)	{}

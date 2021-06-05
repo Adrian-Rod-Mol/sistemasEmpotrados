@@ -152,3 +152,12 @@ void MainScreenView::HandleCamState(bool state)
 	camImage.invalidate();
 
 }
+
+/***************************************************************/
+/**
+ * @brief Muestra u oculta el bitmap
+ */
+uint8_t* MainScreenView::GetImageBitmap()
+{
+	return Bitmap::dynamicBitmapGetAddress(this->camImage.getBitmap());
+}

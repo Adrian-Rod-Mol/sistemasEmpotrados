@@ -17,6 +17,8 @@ public:
 	void HandleCamBitmap();
 	void HandleCamState	(bool state);
 
+	uint8_t* GetImageBitmap();
+
 protected:
 };
 
