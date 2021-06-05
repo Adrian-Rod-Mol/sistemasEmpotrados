@@ -17,6 +17,7 @@ extern "C" {
   extern osMemoryPoolId_t 	command_MemPool;
 
   extern osMessageQueueId_t	frameQueueHandle;
+  extern osMessageQueueId_t framerateQueueHandle;
   extern osEventFlagsId_t 	readFrameEventHandle;
   extern osMemoryPoolId_t 	frame_MemPool;
 
@@ -25,13 +26,11 @@ extern "C" {
 Model::Model() : modelListener(0)
 {
 	this->fps		= 10;
-	this->maxTemp	= 57;
-	this->minTemp	= 6;
+	this->maxTemp	= 40;
+	this->minTemp	= 20;
 
 	this->camState = false;
 
-	this->frame[0] = 10;
-	for (int i = 1; i < 64; i++) { this->frame[i] = this->frame[i - 1] + 0.5; }
 }
 
 /**
@@ -50,9 +49,17 @@ void Model::tick()
 
   App_Message *app_message = NULL;
 
-  osDelay(10);
+  if (this->camState) {
+    os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 10);
 
-  this->modelListener->SetBitmapValues(this->frame);
+	if (os_status == osOK) {
+		for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }
+		this->modelListener->SetBitmapValues(this->frame);
+	}
+	os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
+	if (os_pool_status != osOK) printf("Pool Failure\r\n");
+  }
+
 
   os_status = osMessageQueueGet(temp_queueHandle, &temperature, 0, 10);
   if (os_status == osOK) {
@@ -144,6 +151,11 @@ void Model::SendCamFrame(float *frame)
   }
   os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
   if (os_pool_status != osOK) printf("Pool Failure\r\n");
+
+  if (!(this->camState)) {
+	  osEventFlagsClear(readFrameEventHandle, FRAME_FLAG);
+  }
+
 }
 
 /***************************************************************/
@@ -152,7 +164,20 @@ void Model::SendCamFrame(float *frame)
 /***************************************************************/
 void Model::ChangeBitmapState(bool state)
 {
+	osStatus_t osCamStatus;
 	this->camState = !(this->camState);
+
+	if (this->camState) {
+
+		this->frameDelay = 1000 / this->fps;
+		osCamStatus = osMessageQueuePut(framerateQueueHandle, ((void*) &this->frameDelay), 0, 0);
+
+		if (osCamStatus == osOK) {
+			osEventFlagsSet(readFrameEventHandle, FRAME_FLAG);
+		}
+	} else {
+		osEventFlagsClear(readFrameEventHandle, FRAME_FLAG);
+	}
 }
 
 /***************************************************************/

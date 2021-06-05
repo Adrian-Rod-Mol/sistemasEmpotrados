@@ -25,6 +25,7 @@ extern osMutexId_t 			camAccessMutexHandle;
 extern osMessageQueueId_t	temp_queueHandle;
 
 extern osMessageQueueId_t	frameQueueHandle;
+extern osMessageQueueId_t 	framerateQueueHandle;
 extern osEventFlagsId_t 	readFrameEventHandle;
 
 osMemoryPoolId_t frame_MemPool; /**< Pool de memoria para los comandos **/
@@ -80,13 +81,26 @@ void temperature_task(void *argument) {
 void FrameTask(void *argument) {
 
   uint16_t  frameRaw[64] 	= {0};
-  float     *frame = NULL;
+  float*    frame 			= NULL;
+  uint32_t  ticks           = 0;
+  uint32_t	frameDelay		= 100;
+  uint32_t	recDelay		= 0;
+
+  osStatus_t  osTickStatus;
 
   HAL_StatusTypeDef hal_status;
 
   for (;;) {
 
-	osEventFlagsWait(readFrameEventHandle, FRAME_FLAG, osFlagsWaitAll, osWaitForever);
+	osEventFlagsWait(readFrameEventHandle, FRAME_FLAG, osFlagsNoClear, osWaitForever);
+
+	ticks = osKernelGetTickCount();
+
+	osTickStatus = osMessageQueueGet(framerateQueueHandle, &recDelay, 0, 100);
+
+	if (osTickStatus == osOK) {
+		frameDelay = recDelay;
+	}
 
 	osMutexAcquire(camAccessMutexHandle, 2000);
     hal_status = ReadFrameRegisters(frameRaw);
@@ -98,6 +112,12 @@ void FrameTask(void *argument) {
     	for (int i = 0; i < 64; i++) frame[i] = frameRaw[i] * 0.25;
         osMessageQueuePut(frameQueueHandle, ((void*) &frame), 0, 0);
     }
+
+    ticks += frameDelay;
+    osDelayUntil(ticks);
+
+
+
 
   }
 }
