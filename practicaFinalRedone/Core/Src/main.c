@@ -25,6 +25,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Components/ili9341/ili9341.h"
+
+#include "cli.h"
+#include "camera.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -204,6 +207,9 @@ uint32_t Spi5Timeout = SPI5_TIMEOUT_MAX; /*<! Value of Timeout when SPI communic
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+  camInit();
+  cli_init();
 
   /* USER CODE END 1 */
 
@@ -1029,6 +1035,22 @@ uint32_t LCD_IO_ReadData(uint16_t RegValue, uint8_t ReadSize)
 void LCD_Delay(uint32_t Delay)
 {
   HAL_Delay(Delay);
+}
+
+#ifdef __GNUC__
+  /* With GCC, small printf (option LD Linker->Libraries->Small printf
+   set to 'Yes') calls __io_putchar() */
+  #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+  #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
+PUTCHAR_PROTOTYPE {
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART1 and Loop until the end of transmission */
+  HAL_UART_Transmit(&huart1, (uint8_t*) &ch, 1, 0xFFFF);
+
+  return ch;
 }
 
 /* USER CODE END 4 */

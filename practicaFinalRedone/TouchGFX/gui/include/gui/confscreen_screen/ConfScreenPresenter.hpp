@@ -27,6 +27,15 @@ public:
 
     virtual ~ConfScreenPresenter() {};
 
+    void ChangeFPSValue		(bool operation);
+	void ChangeMaxTempValue	(bool operation);
+	void ChangeMinTempValue	(bool operation);
+
+	void SetFPSValue		(uint8_t fps);
+	void SetMaxTempValue	(uint8_t maxTemp);
+	void SetMinTempValue	(uint8_t minTemp);
+
+
 private:
     ConfScreenPresenter();
 

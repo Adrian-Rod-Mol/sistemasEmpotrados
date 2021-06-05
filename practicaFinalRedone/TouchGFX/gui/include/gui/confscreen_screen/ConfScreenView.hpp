@@ -11,6 +11,20 @@ public:
     virtual ~ConfScreenView() {}
     virtual void setupScreen();
     virtual void tearDownScreen();
+
+    void PlusFPS();
+	void MinusFPS();
+
+	void PlusMaxTemp();
+	void MinusMaxTemp();
+
+	void PlusMinTemp();
+	void MinusMinTemp();
+
+	void UpdateFPS		(uint8_t fps);
+	void UpdateMaxTemp	(uint8_t maxTemp);
+	void UpdateMinTemp	(uint8_t minTemp);
+
 protected:
 };
 
