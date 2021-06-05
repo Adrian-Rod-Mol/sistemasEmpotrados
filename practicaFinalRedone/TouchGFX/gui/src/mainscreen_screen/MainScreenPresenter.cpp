@@ -2,6 +2,7 @@
 #include <gui/mainscreen_screen/MainScreenPresenter.hpp>
 
 #include <cstring>
+#include <math.h>
 
 MainScreenPresenter::MainScreenPresenter(MainScreenView& v)
     : view(v)
@@ -52,12 +53,20 @@ void MainScreenPresenter::SetBitmapValues(float *frame)
 					pxInpx);
 		}
 
-		for (int blckRow = 1; blckRow < pxInpx; blckRow++) {
+		// Se va incrementando en 2 el número de filas que se copian, se para en 16 y luego
+		// se copian las 14 restantes
+
+		for (int blckRow = 0; blckRow < 4; blckRow++) {
 			// Copia la primera fila del pixel en las demás filas
-			memcpy((void*) &data[pxHgth * 240 * pxInpx + blckRow * 240],
+			int index = (pow(2, blckRow) * 240);
+			memcpy((void*) &data[pxHgth * 240 * pxInpx + index],
 				   (void*) &data[pxHgth * 240 * pxInpx],
-				   240);
+				   (pow(2, blckRow) * 240));
 		}
+
+		memcpy((void*) &data[pxHgth * 240 * pxInpx + (16 * 240)],
+			   (void*) &data[pxHgth * 240 * pxInpx],
+			   14 * 240);
 	}
 
 
