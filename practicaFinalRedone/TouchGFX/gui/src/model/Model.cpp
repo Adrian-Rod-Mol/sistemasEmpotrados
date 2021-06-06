@@ -55,9 +55,10 @@ void Model::tick()
 	if (os_status == osOK) {
 		for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }
 		this->modelListener->SetBitmapValues(this->frame);
+		os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
+		if (os_pool_status != osOK) printf("Pool Failure Correcto\r\n");
 	}
-	os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
-	if (os_pool_status != osOK) printf("Pool Failure\r\n");
+
   }
 
 
@@ -139,16 +140,22 @@ void Model::SendCamFrame(float *frame)
   os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 3000);
 
   if (os_status == osOK) {
+
+	for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }
+
+
 	printf("    CAM FRAME (%cC):", 0xB0);
 
 	for (int i = 0; i < 8; i++) {
 		printf(" \r\n  ");
 		for (int j = 0; j < 8; j++) {
-			printf("%3.2f  ", frame[ (i * 8) + j ]);
+			printf("%3.2f  ", this->frame[ (i * 8) + j ]);
 		}
 	}
 	printf(" \r\n");
+
   }
+
   os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
   if (os_pool_status != osOK) printf("Pool Failure\r\n");
 
@@ -177,6 +184,18 @@ void Model::ChangeBitmapState(bool state)
 		}
 	} else {
 		osEventFlagsClear(readFrameEventHandle, FRAME_FLAG);
+	}
+}
+
+/***************************************************************/
+void Model::SendScreenshot()
+{
+	if (this->camState) {
+		float* frame = NULL;
+		this->SendCamFrame(frame);
+	} else {
+		printf("Camara desactivada, activela para usar esta funcion.\r\n");
+		PrintPointer();
 	}
 }
 

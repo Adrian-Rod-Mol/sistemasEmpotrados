@@ -29,6 +29,7 @@ public:
 	uint8_t GetMinTemp();
 
 	void	ChangeBitmapState	(bool state);
+	void	SendScreenshot();
 
 	void ChangeFPSValue		(bool operation);
 	void ChangeMaxTempValue	(bool operation);

@@ -13,6 +13,7 @@ public:
     virtual void tearDownScreen();
 
     void ToggleCamBitmap();
+    void CamScreenshot();
 
 	void HandleCamBitmap();
 	void HandleCamState	(bool state);

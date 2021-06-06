@@ -28,6 +28,7 @@ public:
     virtual ~MainScreenPresenter() {};
 
     void HandleBitmapVisibility	(bool state);
+    void TakeScreenshot			();
 
     void SetBitmapValues		(float *frame);
 	void SetBitmapVisibility	(bool state);

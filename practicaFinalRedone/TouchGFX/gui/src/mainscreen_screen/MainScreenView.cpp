@@ -90,6 +90,15 @@ void MainScreenView::ToggleCamBitmap()
 
 /***************************************************************/
 /**
+ * @brief Método que maneja el botón de captura de pantalla
+ */
+void MainScreenView::CamScreenshot()
+{
+	this->presenter->TakeScreenshot();
+}
+
+/***************************************************************/
+/**
  * @brief Muestra u oculta el bitmap
  */
 void MainScreenView::HandleCamBitmap()

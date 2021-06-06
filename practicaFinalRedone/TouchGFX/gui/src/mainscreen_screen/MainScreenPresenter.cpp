@@ -26,6 +26,12 @@ void MainScreenPresenter::HandleBitmapVisibility(bool state)
 	this->SetBitmapVisibility(this->model->GetCamState());
 }
 
+void MainScreenPresenter::TakeScreenshot()
+{
+	this->model->SendScreenshot();
+}
+
+
 void MainScreenPresenter::SetBitmapVisibility(bool state)
 {
 	this->view.HandleCamState(state);

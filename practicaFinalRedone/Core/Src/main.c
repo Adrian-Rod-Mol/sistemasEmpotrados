@@ -208,8 +208,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-  camInit();
-  cli_init();
+
 
   /* USER CODE END 1 */
 
@@ -240,7 +239,8 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
-
+  cli_init();
+  camInit();
   /* USER CODE END 2 */
 
   /* Init scheduler */
