@@ -13,6 +13,7 @@ MainScreenPresenter::MainScreenPresenter(MainScreenView& v)
 void MainScreenPresenter::activate()
 {
 	this->SetBitmapVisibility(this->model->GetCamState());
+	this->SetTargetState(this->model->GetTargetState());
 }
 
 void MainScreenPresenter::deactivate()
@@ -31,11 +32,26 @@ void MainScreenPresenter::TakeScreenshot()
 	this->model->SendScreenshot();
 }
 
+void MainScreenPresenter::HandleTargetTemp(bool state)
+{
+	this->model->ChangeTargetState(state);
+	this->SetTargetState(this->model->GetTargetState());
+}
 
 void MainScreenPresenter::SetBitmapVisibility(bool state)
 {
 	this->view.HandleCamState(state);
 
+}
+
+void MainScreenPresenter::SetTargetState(bool state)
+{
+	this->view.HandleTargetState(state);
+}
+
+void MainScreenPresenter::SetTargetValue(float temperature)
+{
+	this->view.HandleTargetTemp(temperature);
 }
 
 void MainScreenPresenter::SetBitmapValues(float *frame)

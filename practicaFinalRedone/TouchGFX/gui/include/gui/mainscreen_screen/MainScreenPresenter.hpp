@@ -29,9 +29,12 @@ public:
 
     void HandleBitmapVisibility	(bool state);
     void TakeScreenshot			();
+    void HandleTargetTemp		(bool state);
 
     void SetBitmapValues		(float *frame);
 	void SetBitmapVisibility	(bool state);
+	void SetTargetState			(bool state);
+	void SetTargetValue			(float temperature);
 
 
 private:

@@ -14,9 +14,12 @@ public:
 
     void ToggleCamBitmap();
     void CamScreenshot();
+    void ToggleTargetTemp();
 
 	void HandleCamBitmap();
-	void HandleCamState	(bool state);
+	void HandleCamState		(bool state);
+	void HandleTargetState	(bool state);
+	void HandleTargetTemp	(float temperature);
 
 	uint8_t* GetImageBitmap();
 

@@ -29,7 +29,8 @@ Model::Model() : modelListener(0)
 	this->maxTemp	= 40;
 	this->minTemp	= 20;
 
-	this->camState = false;
+	this->camState 		= false;
+	this->targetState 	= false;
 
 }
 
@@ -42,6 +43,7 @@ void Model::tick()
 {
   float	temperature 	= 0.0;
   float *frame = NULL;
+  float midTemp			= 22.3;
 
   osStatus_t  os_status;
   osStatus_t  os_msg_status;
@@ -53,14 +55,21 @@ void Model::tick()
     os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 10);
 
 	if (os_status == osOK) {
+
 		for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }
+
 		this->modelListener->SetBitmapValues(this->frame);
+
 		os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
 		if (os_pool_status != osOK) printf("Pool Failure Correcto\r\n");
 	}
 
   }
 
+  if (this->targetState && this->camState) {
+	  midTemp = ((this->frame[27] + this->frame[28] + this->frame[35] + this->frame[36]) / 4);
+	  this->modelListener->SetTargetValue(midTemp);
+  }
 
   os_status = osMessageQueueGet(temp_queueHandle, &temperature, 0, 10);
   if (os_status == osOK) {
@@ -182,8 +191,12 @@ void Model::ChangeBitmapState(bool state)
 		if (osCamStatus == osOK) {
 			osEventFlagsSet(readFrameEventHandle, FRAME_FLAG);
 		}
+
+		this->modelListener->SetTargetState(this->targetState);
 	} else {
 		osEventFlagsClear(readFrameEventHandle, FRAME_FLAG);
+
+		this->modelListener->SetTargetState(false);
 	}
 }
 
@@ -196,6 +209,14 @@ void Model::SendScreenshot()
 	} else {
 		printf("Camara desactivada, activela para usar esta funcion.\r\n");
 		PrintPointer();
+	}
+}
+
+/***************************************************************/
+void Model::ChangeTargetState(bool state)
+{
+	if (this->camState) {
+		this->targetState = !(this->targetState);
 	}
 }
 
@@ -278,6 +299,11 @@ void Model::ChangeMinTempValue(bool operation)
 bool Model::GetCamState()
 {
 	return this->camState;
+}
+/***************************************************************/
+bool Model::GetTargetState()
+{
+	return this->targetState;
 }
 
 /* Pantalla Secundaria */

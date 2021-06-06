@@ -23,6 +23,7 @@ public:
 	void SendCamFrame(float *frame);
 
 	bool	GetCamState();
+	bool	GetTargetState();
 
 	uint8_t GetFPS();
 	uint8_t GetMaxTemp();
@@ -30,6 +31,7 @@ public:
 
 	void	ChangeBitmapState	(bool state);
 	void	SendScreenshot();
+	void	ChangeTargetState	(bool state);
 
 	void ChangeFPSValue		(bool operation);
 	void ChangeMaxTempValue	(bool operation);
@@ -42,6 +44,7 @@ protected:
     float temperature;
 
 	bool 		camState;
+	bool		targetState;
 
 	float		frame[64];
 	uint32_t 	frameDelay;

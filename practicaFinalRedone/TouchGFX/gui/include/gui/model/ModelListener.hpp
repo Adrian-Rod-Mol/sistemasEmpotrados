@@ -14,6 +14,8 @@ public:
 
     virtual void SetBitmapVisibility(bool state)		{}
     virtual void SetBitmapValues	(float *frame)		{}
+    virtual void SetTargetState		(bool state)		{}
+    virtual void SetTargetValue		(float temperature)	{}
 
 	virtual void SetFPSValue		(uint8_t fps) 		{}
 	virtual void SetMaxTempValue	(uint8_t maxTemp)	{}

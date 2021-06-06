@@ -99,6 +99,15 @@ void MainScreenView::CamScreenshot()
 
 /***************************************************************/
 /**
+ * @brief Método que maneja el puntero de la cámara
+ */
+void MainScreenView::ToggleTargetTemp()
+{
+	this->presenter->HandleTargetTemp(this->targetPoint.isVisible());
+}
+
+/***************************************************************/
+/**
  * @brief Muestra u oculta el bitmap
  */
 void MainScreenView::HandleCamBitmap()
@@ -119,7 +128,29 @@ void MainScreenView::HandleCamState(bool state)
 	camImage.invalidate();
 
 }
+/***************************************************************/
+/**
+ * @brief Muestra u oculta tanto el puntero como el valor de la
+ * temperatura central
+ */
+void MainScreenView::HandleTargetState(bool state)
+{
+	this->targetPoint.setVisible(state);
+	this->targetTemp.setVisible(state);
 
+	targetPoint.invalidate();
+	targetTemp.invalidate();
+}
+/***************************************************************/
+/**
+ * @brief Actualiza el valor de la temperatura del puntero
+ */
+void MainScreenView::HandleTargetTemp(float temperature)
+{
+	Unicode::snprintfFloat(this->targetTempBuffer, sizeof(this->targetTempBuffer), "%4.1f", temperature);
+    this->targetTemp.resizeToCurrentText();
+    this->targetTemp.invalidate();
+}
 /***************************************************************/
 /**
  * @brief Muestra u oculta el bitmap
