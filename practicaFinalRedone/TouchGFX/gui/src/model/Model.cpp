@@ -205,7 +205,9 @@ void Model::SendScreenshot()
 {
 	if (this->camState) {
 		float* frame = NULL;
+		printf("\r\n");
 		this->SendCamFrame(frame);
+		PrintPointer();
 	} else {
 		printf("Camara desactivada, activela para usar esta funcion.\r\n");
 		PrintPointer();

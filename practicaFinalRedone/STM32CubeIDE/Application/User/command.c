@@ -23,6 +23,8 @@ void help_cli_cmd(void);
 void cam_temp_cli_cmd(void);
 void cam_frame_cli_cmd(void);
 
+float orderCount = 0.0;
+
 
 
 CLI_Command cli_command_list[] = {
@@ -59,18 +61,21 @@ void PrintSeparator(void)
 
 void PrintPointer(void)
 {
-	printf("setr-p4 >> ");
+	printf("setr-p4 >> %2.0f: ", orderCount);
 	fflush(stdout);
+	orderCount++;
 }
 
 void PrintHeader(char section)
 {
+	float year1 = 20.0;
+	float year2 = 21.0;
 	printf("###########################################################\r\n");
 
 	switch(section)
 	{
 	case 1:
-		printf("###         Ejercicio de Practica 4 SETR 20-21          ###\r\n");
+		printf("###         Ejercicio de Practica 4 SETR %2.0f-%2.0f          ###\r\n", year1, year2);
 		break;
 	case 2:
 		printf("###         Comandos Aceptados por el programa          ###\r\n");

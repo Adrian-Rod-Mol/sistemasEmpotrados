@@ -10,6 +10,11 @@ public:
     virtual ~TopBar() {}
 
     virtual void initialize();
+
+    void SetCPUTemp		(float temperature);
+    void SetSensorTemp	(float temperature);
+    void SetScreenFPS	(float fps);
+
 protected:
 };
 
