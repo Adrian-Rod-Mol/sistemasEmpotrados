@@ -10,13 +10,17 @@
 
 #define CLI_UNKNOWN_CODE    0
 #define CLI_HELP_CODE       1
-#define CLI_CAM_TEMP_CODE   2
-#define CLI_CAM_FRAME_CODE  3
+#define CLI_CAM_ON_CODE		2
+#define CLI_CAM_OFF_CODE	3
+#define CLI_CAM_TEMP_CODE   4
+#define CLI_CAM_FRAME_CODE  5
 
 #define APP_UNKNOWN_COMMAND 0
 #define APP_HELP_COMMAND    1
-#define APP_SEND_CAM_TEMP   2
-#define APP_SEND_CAM_FRAME  3
+#define APP_TURN_ON_CAM		2
+#define APP_TURN_OFF_CAM	3
+#define APP_SEND_CAM_TEMP   4
+#define APP_SEND_CAM_FRAME  5
 
 typedef void *(SFPointer)(void);
 

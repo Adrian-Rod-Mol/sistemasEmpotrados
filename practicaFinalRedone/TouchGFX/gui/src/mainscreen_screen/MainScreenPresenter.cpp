@@ -15,7 +15,11 @@ void MainScreenPresenter::activate()
 	this->model->SetCurrentScreen(1);
 
 	this->SetBitmapVisibility(this->model->GetCamState());
-	this->SetTargetState(this->model->GetTargetState());
+	if (this->model->GetCamState()) {
+		this->SetTargetState(this->model->GetTargetState());
+	}
+
+
 }
 
 void MainScreenPresenter::deactivate()

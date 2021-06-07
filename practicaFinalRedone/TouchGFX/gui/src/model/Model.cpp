@@ -2,8 +2,10 @@
 #include <gui/model/ModelListener.hpp>
 
 #include "cmsis_os2.h"
+#include "stm32f4xx_hal.h"
 #include <string.h>
 #include <stdio.h>  // Para el printf
+
 
 #define FRAME_FLAG 				(0x01<<1)	/**< @brief Flag que inicia lectura del frame de la cámara */
 
@@ -14,6 +16,7 @@ extern "C" {
 
   extern osMessageQueueId_t cpuTempQueueHandle;
   extern osMessageQueueId_t	temp_queueHandle;
+  extern TIM_HandleTypeDef 	htim2;
 
   extern osMessageQueueId_t messageQueueHandle;
   extern osMemoryPoolId_t 	command_MemPool;
@@ -23,16 +26,21 @@ extern "C" {
   extern osEventFlagsId_t 	readFrameEventHandle;
   extern osMemoryPoolId_t 	frame_MemPool;
 
+
 }
 
 Model::Model() : modelListener(0)
 {
-	this->fps		= 10;
-	this->maxTemp	= 40;
-	this->minTemp	= 20;
+	this->fps			= 10;
+	this->maxTemp		= 40;
+	this->minTemp		= 20;
 
 	this->camState 		= false;
 	this->targetState 	= false;
+
+	this->screenFrames 	= 60.0;
+	this->count = 0;
+
 
 }
 
@@ -45,47 +53,51 @@ void Model::tick()
 {
   /* Definición de variables */
   /***************************************************************/
-  float	sensorTemp 		= 30.5;
-  float	cpuTemp 		= 30.5;
-  float	screenFrames 	= 60.0;
+  float		sensorTemp 		= 30.5;
+  float		cpuTemp 		= 30.5;
+  uint32_t 	value			= 0;
 
-  float *frame 			= NULL;
-  float midTemp			= 22.3;
 
-  osStatus_t  os_status;
-  osStatus_t  os_msg_status;
-  osStatus_t  os_pool_status;
+
+  float*	frame 			= NULL;
+  float		midTemp			= 22.3;
+
+  osStatus_t  		os_status;
+  osStatus_t  		os_msg_status;
+  osStatus_t  		os_pool_status;
 
   App_Message *app_message = NULL;
 
   /* Top Bar */
   /***************************************************************/
   // Se obtienen los valores
-  os_status = osMessageQueueGet(cpuTempQueueHandle, &cpuTemp, 0, 10);
+
+
+  __HAL_TIM_SET_COUNTER(&htim2, 0);
+
+  os_status = osMessageQueueGet(cpuTempQueueHandle, &cpuTemp, 0, 2);
   if (os_status == osOK) {
 	this->cpuTemp = cpuTemp;
   }
 
-  os_status = osMessageQueueGet(temp_queueHandle, &sensorTemp, 0, 10);
+  os_status = osMessageQueueGet(temp_queueHandle, &sensorTemp, 0, 2);
   if (os_status == osOK) {
   	this->sensorTemp = sensorTemp;
   }
 
-
-
   /***************************************************************/
   // Se muestran en la pantalla correspondiente
   if (this->currentScreen == 1) {
-	  this->modelListener->SetMainTopBar(this->cpuTemp, this->sensorTemp, screenFrames);
+	  this->modelListener->SetMainTopBar(this->cpuTemp, this->sensorTemp, this->screenFrames);
   } else if (this->currentScreen == 2) {
-	  this->modelListener->SetConfTopBar(this->cpuTemp, this->sensorTemp, screenFrames);
+	  this->modelListener->SetConfTopBar(this->cpuTemp, this->sensorTemp, this->screenFrames);
   }
 
 
   /* Frame de la cámara */
   /***************************************************************/
   if (this->camState) {
-    os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 10);
+    os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 4);
 
 	if (os_status == osOK) {
 
@@ -107,7 +119,7 @@ void Model::tick()
 
   /* Mensajes del puerto serie */
   /***************************************************************/
-  os_msg_status = osMessageQueueGet(messageQueueHandle, &app_message, 0, 10);
+  os_msg_status = osMessageQueueGet(messageQueueHandle, &app_message, 0, 2);
   if (os_msg_status == osOK) {
 	  switch(app_message->message_code)
 	  {
@@ -132,6 +144,15 @@ void Model::tick()
 	  PrintPointer();
 
   }
+
+  value = __HAL_TIM_GET_COUNTER(&htim2);
+  this->count++;
+  if (count > 3) {
+	  this->screenFrames = (float)1000000 / value;
+	  this->count = 0;
+  }
+
+
 }
 
 /***************************************************************/

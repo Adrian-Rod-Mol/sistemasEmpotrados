@@ -49,6 +49,9 @@ protected:
     float		cpuTemp;
     float		screenFrames;
 
+    //this->previousTicks;
+    uint8_t		count;
+
 	bool 		camState;
 	bool		targetState;
 
