@@ -21,6 +21,8 @@ public:
 	void PlusMinTemp();
 	void MinusMinTemp();
 
+	void HandleTopBarData	(float cpuTemp, float sensorTemp, float fps);
+
 	void UpdateFPS		(uint8_t fps);
 	void UpdateMaxTemp	(uint8_t maxTemp);
 	void UpdateMinTemp	(uint8_t minTemp);

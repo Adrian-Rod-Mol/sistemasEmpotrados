@@ -11,6 +11,7 @@ public:
     virtual ~ModelListener() {}
 
     virtual void SetMainTopBar		(float cpuTemp, float sensorTemp, float fps) {}
+    virtual void SetConfTopBar		(float cpuTemp, float sensorTemp, float fps) {}
 
     virtual void set_new_temperature(float temperature)	{}
 

@@ -27,6 +27,8 @@ public:
 
     virtual ~ConfScreenPresenter() {};
 
+    void SetConfTopBar		(float cpuTemp, float sensorTemp, float fps);
+
     void ChangeFPSValue		(bool operation);
 	void ChangeMaxTempValue	(bool operation);
 	void ChangeMinTempValue	(bool operation);

@@ -23,6 +23,12 @@ void ConfScreenPresenter::deactivate()
 }
 
 /***************************************************************/
+void ConfScreenPresenter::SetConfTopBar(float cpuTemp, float sensorTemp, float fps)
+{
+	this->view.HandleTopBarData(cpuTemp, sensorTemp, fps);
+}
+
+/***************************************************************/
 /**
  * @brief Método que actualiza el valor en la vista de los fps de la cámara
  *

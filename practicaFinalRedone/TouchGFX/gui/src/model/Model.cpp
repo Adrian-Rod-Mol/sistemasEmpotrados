@@ -68,6 +68,8 @@ void Model::tick()
   // Se muestran en la pantalla correspondiente
   if (this->currentScreen == 1) {
 	  this->modelListener->SetMainTopBar(cpuTemp, this->sensorTemp, screenFrames);
+  } else if (this->currentScreen == 2) {
+	  this->modelListener->SetConfTopBar(cpuTemp, this->sensorTemp, screenFrames);
   }
 
 

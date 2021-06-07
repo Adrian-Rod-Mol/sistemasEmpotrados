@@ -15,9 +15,7 @@ void ConfScreenView::tearDownScreen()
     ConfScreenViewBase::tearDownScreen();
 }
 
-/***************************************************************/
-/*** MÉTODOS DE LOS BOTONES ***/
-
+/* Botones */
 /***************************************************************/
 /**
  * @brief Método CallBack para aumentar el valor de los FPS
@@ -26,6 +24,7 @@ void ConfScreenView::PlusFPS()
 {
 	this->presenter->ChangeFPSValue(true);
 }
+
 /**
  * @brief Método CallBack para disminuir el valor de los FPS
  */
@@ -43,6 +42,7 @@ void ConfScreenView::PlusMaxTemp()
 {
 	this->presenter->ChangeMaxTempValue(true);
 }
+
 /**
  * @brief Método CallBack para dismiuir el valor de la
  * 		  máxima temperatura
@@ -61,6 +61,7 @@ void ConfScreenView::PlusMinTemp()
 {
 	this->presenter->ChangeMinTempValue(true);
 }
+
 /**
  * @brief Método CallBack para dismiuir el valor de la
  * 		  mínima temperatura
@@ -71,9 +72,26 @@ void ConfScreenView::MinusMinTemp()
 }
 
 
+/* Top Bar */
 /***************************************************************/
-/*** MÉTODOS PARA ACTUALIZAR LOS VALORES DE PANTALLA ***/
+/**
+ * @brief Método que actualiza los valores de la top bar
+ *
+ * @param cpuTemp: 		valor de la temperatura del procesador
+ * @param sensorTemp: 	valor de la temperatura del sensor de la cámara
+ * @param fps: 			valor de los frame por segundo de la pantalla
+ */
+void ConfScreenView::HandleTopBarData(float cpuTemp, float sensorTemp, float fps)
+{
+	this->dataBarConf.SetCPUTemp(cpuTemp);
+	this->dataBarConf.SetSensorTemp(sensorTemp);
+	this->dataBarConf.SetScreenFPS(fps);
 
+	this->dataBarConf.invalidate();
+}
+
+
+/* Métodos para actualizar valores en pantalla */
 /***************************************************************/
 /**
  * @brief Método que actualiza el valor del cuadro de texto
