@@ -18,6 +18,7 @@ void TopBar::initialize()
  */
 void TopBar::SetCPUTemp(float temperature)
 {
+	Unicode::snprintfFloat(this->cpuTempBuffer, sizeof(this->cpuTempBuffer), "%2.1f", temperature);
 
 }
 
@@ -30,8 +31,7 @@ void TopBar::SetCPUTemp(float temperature)
 void TopBar::SetSensorTemp(float temperature)
 {
 	Unicode::snprintfFloat(this->sensorTempBuffer, sizeof(this->sensorTempBuffer), "%2.1f", temperature);
-	this->sensorTemp.resizeToCurrentText();
-	this->sensorTemp.invalidate();
+
 }
 
 /***************************************************************/
@@ -42,5 +42,6 @@ void TopBar::SetSensorTemp(float temperature)
  */
 void TopBar::SetScreenFPS(float fps)
 {
+	Unicode::snprintfFloat(this->fpsCountBuffer, sizeof(this->fpsCountBuffer), "%2.1f", fps);
 
 }

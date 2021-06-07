@@ -10,6 +10,8 @@ public:
     
     virtual ~ModelListener() {}
 
+    virtual void SetMainTopBar		(float cpuTemp, float sensorTemp, float fps) {}
+
     virtual void set_new_temperature(float temperature)	{}
 
     virtual void SetBitmapVisibility(bool state)		{}

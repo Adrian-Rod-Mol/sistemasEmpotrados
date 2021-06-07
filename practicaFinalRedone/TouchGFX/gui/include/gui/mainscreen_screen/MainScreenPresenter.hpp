@@ -31,6 +31,8 @@ public:
     void TakeScreenshot			();
     void HandleTargetTemp		(bool state);
 
+    void SetMainTopBar			(float cpuTemp, float sensorTemp, float fps);
+
     void SetBitmapValues		(float *frame);
 	void SetBitmapVisibility	(bool state);
 	void SetTargetState			(bool state);

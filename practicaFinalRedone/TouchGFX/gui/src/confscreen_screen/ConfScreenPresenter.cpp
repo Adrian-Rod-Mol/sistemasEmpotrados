@@ -9,9 +9,12 @@ ConfScreenPresenter::ConfScreenPresenter(ConfScreenView& v)
 
 void ConfScreenPresenter::activate()
 {
+	this->model->SetCurrentScreen(2);
+
 	this->SetFPSValue(this->model->GetFPS());
 	this->SetMaxTempValue(this->model->GetMaxTemp());
 	this->SetMinTempValue(this->model->GetMinTemp());
+
 }
 
 void ConfScreenPresenter::deactivate()

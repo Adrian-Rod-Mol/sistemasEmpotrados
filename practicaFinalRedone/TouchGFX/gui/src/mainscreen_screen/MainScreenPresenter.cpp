@@ -12,6 +12,8 @@ MainScreenPresenter::MainScreenPresenter(MainScreenView& v)
 
 void MainScreenPresenter::activate()
 {
+	this->model->SetCurrentScreen(1);
+
 	this->SetBitmapVisibility(this->model->GetCamState());
 	this->SetTargetState(this->model->GetTargetState());
 }
@@ -19,6 +21,11 @@ void MainScreenPresenter::activate()
 void MainScreenPresenter::deactivate()
 {
 
+}
+
+void MainScreenPresenter::SetMainTopBar(float cpuTemp, float sensorTemp, float fps)
+{
+	this->view.HandleTopBarData(cpuTemp, sensorTemp, fps);
 }
 
 void MainScreenPresenter::HandleBitmapVisibility(bool state)

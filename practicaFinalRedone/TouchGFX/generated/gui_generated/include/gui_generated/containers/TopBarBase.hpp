@@ -32,11 +32,11 @@ protected:
     /*
      * Wildcard Buffers
      */
-    static const uint16_t SENSORTEMP_SIZE = 4;
+    static const uint16_t SENSORTEMP_SIZE = 5;
     touchgfx::Unicode::UnicodeChar sensorTempBuffer[SENSORTEMP_SIZE];
-    static const uint16_t CPUTEMP_SIZE = 4;
+    static const uint16_t CPUTEMP_SIZE = 5;
     touchgfx::Unicode::UnicodeChar cpuTempBuffer[CPUTEMP_SIZE];
-    static const uint16_t FPSCOUNT_SIZE = 4;
+    static const uint16_t FPSCOUNT_SIZE = 5;
     touchgfx::Unicode::UnicodeChar fpsCountBuffer[FPSCOUNT_SIZE];
 
 private:

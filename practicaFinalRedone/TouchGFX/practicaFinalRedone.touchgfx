@@ -910,7 +910,7 @@
             "Wildcard1": {
               "TextId": "SingleUseId2",
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 5
             },
             "Name": "sensorTemp",
             "X": 80,
@@ -939,7 +939,7 @@
             "Wildcard1": {
               "TextId": "SingleUseId5",
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 5
             },
             "Name": "cpuTemp",
             "X": 6,
@@ -968,7 +968,7 @@
             "Wildcard1": {
               "TextId": "SingleUseId6",
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 5
             },
             "Name": "fpsCount",
             "X": 134,
@@ -1061,7 +1061,7 @@
         "IsResource": false
       }
     ],
-    "Name": "STM32F429I-DISCO",
+    "Name": "practicaFinalRedone",
     "Resolution": {
       "Width": 240,
       "Height": 320
@@ -1097,7 +1097,7 @@
     },
     "GenerateAssetsCommand": "make -f simulator/gcc/Makefile assets -j8",
     "PostGenerateCommand": "touchgfx update_project --project-file=simulator/msvs/Application.vcxproj",
-    "PostGenerateTargetCommand": "touchgfx update_project --project-file=../STM32F429I-DISCO.ioc --platform=m4",
+    "PostGenerateTargetCommand": "touchgfx update_project --project-file=../practicaFinalRedone.ioc --platform=m4",
     "PostGenerateTargetCommandOverride": "touchgfx update_project --project-file=../practicaFinalRedone.ioc --platform=m4",
     "CompileSimulatorCommand": "make -f simulator/gcc/Makefile -j8",
     "RunSimulatorCommand": "build\\bin\\simulator.exe",

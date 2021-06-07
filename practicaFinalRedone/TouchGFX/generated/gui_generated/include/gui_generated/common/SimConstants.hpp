@@ -6,6 +6,6 @@
 
 static unsigned short SIM_WIDTH = 240;
 static unsigned short SIM_HEIGHT = 320;
-#define SIM_TITLE "STM32F429I-DISCO"
+#define SIM_TITLE "practicaFinalRedone"
 
 #endif // SIMCONSTANTS_HPP

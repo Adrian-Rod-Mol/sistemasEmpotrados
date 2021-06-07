@@ -79,6 +79,7 @@ void MainScreenView::tearDownScreen()
     MainScreenViewBase::tearDownScreen();
 }
 
+/* Botones */
 /***************************************************************/
 /**
  * @brief Método que cambia la visibilidad del bitmap
@@ -106,9 +107,31 @@ void MainScreenView::ToggleTargetTemp()
 	this->presenter->HandleTargetTemp(this->targetPoint.isVisible());
 }
 
+
+/* Top Bar */
 /***************************************************************/
 /**
- * @brief Muestra u oculta el bitmap
+ * @brief Método que actualiza los valores de la top bar
+ *
+ * @param cpuTemp: 		valor de la temperatura del procesador
+ * @param sensorTemp: 	valor de la temperatura del sensor de la cámara
+ * @param fps: 			valor de los frame por segundo de la pantalla
+ */
+void MainScreenView::HandleTopBarData(float cpuTemp, float sensorTemp, float fps)
+{
+	this->dataBarMain.SetCPUTemp(cpuTemp);
+	this->dataBarMain.SetSensorTemp(sensorTemp);
+	this->dataBarMain.SetScreenFPS(fps);
+
+	this->dataBarMain.invalidate();
+}
+
+
+/* Manejo de elementos en pantalla */
+/***************************************************************/
+/**
+ * @brief Renderiza el bitmap despúes de asignarle los valores en el
+ * 		  presenter
  */
 void MainScreenView::HandleCamBitmap()
 {
@@ -128,6 +151,7 @@ void MainScreenView::HandleCamState(bool state)
 	camImage.invalidate();
 
 }
+
 /***************************************************************/
 /**
  * @brief Muestra u oculta tanto el puntero como el valor de la
@@ -141,6 +165,7 @@ void MainScreenView::HandleTargetState(bool state)
 	targetPoint.invalidate();
 	targetTemp.invalidate();
 }
+
 /***************************************************************/
 /**
  * @brief Actualiza el valor de la temperatura del puntero
@@ -151,9 +176,11 @@ void MainScreenView::HandleTargetTemp(float temperature)
     this->targetTemp.resizeToCurrentText();
     this->targetTemp.invalidate();
 }
+
+
 /***************************************************************/
 /**
- * @brief Muestra u oculta el bitmap
+ * @brief Obtiene la dirección en memoria del bitmap
  */
 uint8_t* MainScreenView::GetImageBitmap()
 {

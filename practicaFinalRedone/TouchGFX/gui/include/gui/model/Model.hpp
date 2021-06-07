@@ -22,6 +22,8 @@ public:
 	void Unknow(uint8_t index);
 	void SendCamFrame(float *frame);
 
+	void	SetCurrentScreen(uint8_t screen);
+
 	bool	GetCamState();
 	bool	GetTargetState();
 
@@ -41,7 +43,11 @@ public:
 protected:
     ModelListener* modelListener;
 
-    float temperature;
+    uint8_t 	currentScreen;
+
+    float		sensorTemp;
+    float		cpuTemp;
+    float		screenFrames;
 
 	bool 		camState;
 	bool		targetState;

@@ -16,6 +16,8 @@ public:
     void CamScreenshot();
     void ToggleTargetTemp();
 
+    void HandleTopBarData	(float cpuTemp, float sensorTemp, float fps);
+
 	void HandleCamBitmap();
 	void HandleCamState		(bool state);
 	void HandleTargetState	(bool state);

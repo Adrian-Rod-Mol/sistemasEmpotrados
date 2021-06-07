@@ -41,8 +41,13 @@ Model::Model() : modelListener(0)
  */
 void Model::tick()
 {
-  float	temperature 	= 0.0;
-  float *frame = NULL;
+  /* Definición de variables */
+  /***************************************************************/
+  float	sensorTemp 		= 30.5;
+  float	cpuTemp 		= 30.5;
+  float	screenFrames 	= 60.0;
+
+  float *frame 			= NULL;
   float midTemp			= 22.3;
 
   osStatus_t  os_status;
@@ -51,6 +56,23 @@ void Model::tick()
 
   App_Message *app_message = NULL;
 
+  /* Top Bar */
+  /***************************************************************/
+  // Se obtienen los valores
+  os_status = osMessageQueueGet(temp_queueHandle, &sensorTemp, 0, 10);
+  if (os_status == osOK) {
+  	this->sensorTemp = sensorTemp;
+  }
+
+  /***************************************************************/
+  // Se muestran en la pantalla correspondiente
+  if (this->currentScreen == 1) {
+	  this->modelListener->SetMainTopBar(cpuTemp, this->sensorTemp, screenFrames);
+  }
+
+
+  /* Frame de la cámara */
+  /***************************************************************/
   if (this->camState) {
     os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 10);
 
@@ -58,7 +80,7 @@ void Model::tick()
 
 		for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }
 
-		this->modelListener->SetBitmapValues(this->frame);
+		this->modelListener->SetBitmapValues(frame);
 
 		os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
 		if (os_pool_status != osOK) printf("Pool Failure Correcto\r\n");
@@ -71,12 +93,9 @@ void Model::tick()
 	  this->modelListener->SetTargetValue(midTemp);
   }
 
-  os_status = osMessageQueueGet(temp_queueHandle, &temperature, 0, 10);
-  if (os_status == osOK) {
-	this->temperature = temperature;
-	//this->modelListener->set_new_temperature(temperature);
-  }
 
+  /* Mensajes del puerto serie */
+  /***************************************************************/
   os_msg_status = osMessageQueueGet(messageQueueHandle, &app_message, 0, 10);
   if (os_msg_status == osOK) {
 	  switch(app_message->message_code)
@@ -110,7 +129,7 @@ void Model::tick()
 /***************************************************************/
 void Model::send_cam_temp()
 {
-	printf("    CAM TEMPERATURE: %3.3f %cC.\r\n", this->temperature, 0xB0);
+	printf("    CAM TEMPERATURE: %3.3f %cC.\r\n", this->sensorTemp, 0xB0);
 }
 
 void Model::Unknow(uint8_t index)
@@ -293,8 +312,14 @@ void Model::ChangeMinTempValue(bool operation)
 }
 
 /***************************************************************/
-/*** GETTERS ***/
+/*** GETTERS Y SETTERS ***/
 
+/* Variables comunes */
+/***************************************************************/
+void Model::SetCurrentScreen(uint8_t screen)
+{
+	this->currentScreen = screen;
+}
 
 /* Pantalla Principal */
 /***************************************************************/
