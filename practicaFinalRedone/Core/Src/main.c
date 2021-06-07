@@ -65,6 +65,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 CRC_HandleTypeDef hcrc;
 
 DMA2D_HandleTypeDef hdma2d;
@@ -107,6 +109,13 @@ const osThreadAttr_t frame_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for cpu_temp */
+osThreadId_t cpu_tempHandle;
+const osThreadAttr_t cpu_temp_attributes = {
+  .name = "cpu_temp",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* Definitions for temp_queue */
 osMessageQueueId_t temp_queueHandle;
 const osMessageQueueAttr_t temp_queue_attributes = {
@@ -132,6 +141,11 @@ osMessageQueueId_t framerateQueueHandle;
 const osMessageQueueAttr_t framerateQueue_attributes = {
   .name = "framerateQueue"
 };
+/* Definitions for cpuTempQueue */
+osMessageQueueId_t cpuTempQueueHandle;
+const osMessageQueueAttr_t cpuTempQueue_attributes = {
+  .name = "cpuTempQueue"
+};
 /* Definitions for camAccessMutex */
 osMutexId_t camAccessMutexHandle;
 const osMutexAttr_t camAccessMutex_attributes = {
@@ -156,10 +170,12 @@ static void MX_FMC_Init(void);
 static void MX_LTDC_Init(void);
 static void MX_DMA2D_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_ADC1_Init(void);
 void TouchGFX_Task(void *argument);
 void temperature_task(void *argument);
 void cli_processing_task(void *argument);
 void FrameTask(void *argument);
+void CpuTemp(void *argument);
 
 /* USER CODE BEGIN PFP */
 static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_SDRAM_CommandTypeDef *Command);
@@ -237,6 +253,7 @@ int main(void)
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_USART1_UART_Init();
+  MX_ADC1_Init();
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
   cli_init();
@@ -277,6 +294,9 @@ int main(void)
   /* creation of framerateQueue */
   framerateQueueHandle = osMessageQueueNew (6, sizeof(uint32_t), &framerateQueue_attributes);
 
+  /* creation of cpuTempQueue */
+  cpuTempQueueHandle = osMessageQueueNew (5, sizeof(float), &cpuTempQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -293,6 +313,9 @@ int main(void)
 
   /* creation of frame */
   frameHandle = osThreadNew(FrameTask, NULL, &frame_attributes);
+
+  /* creation of cpu_temp */
+  cpu_tempHandle = osThreadNew(CpuTemp, NULL, &cpu_temp_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -370,6 +393,56 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
@@ -1125,6 +1198,24 @@ __weak void FrameTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END FrameTask */
+}
+
+/* USER CODE BEGIN Header_CpuTemp */
+/**
+* @brief Function implementing the cpu_temp thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_CpuTemp */
+__weak void CpuTemp(void *argument)
+{
+  /* USER CODE BEGIN CpuTemp */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END CpuTemp */
 }
 
  /**

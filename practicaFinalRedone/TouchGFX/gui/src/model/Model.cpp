@@ -11,6 +11,8 @@ extern "C" {
 
   #include "command.h"
   #include "cli.h"
+
+  extern osMessageQueueId_t cpuTempQueueHandle;
   extern osMessageQueueId_t	temp_queueHandle;
 
   extern osMessageQueueId_t messageQueueHandle;
@@ -59,17 +61,24 @@ void Model::tick()
   /* Top Bar */
   /***************************************************************/
   // Se obtienen los valores
+  os_status = osMessageQueueGet(cpuTempQueueHandle, &cpuTemp, 0, 10);
+  if (os_status == osOK) {
+	this->cpuTemp = cpuTemp;
+  }
+
   os_status = osMessageQueueGet(temp_queueHandle, &sensorTemp, 0, 10);
   if (os_status == osOK) {
   	this->sensorTemp = sensorTemp;
   }
 
+
+
   /***************************************************************/
   // Se muestran en la pantalla correspondiente
   if (this->currentScreen == 1) {
-	  this->modelListener->SetMainTopBar(cpuTemp, this->sensorTemp, screenFrames);
+	  this->modelListener->SetMainTopBar(this->cpuTemp, this->sensorTemp, screenFrames);
   } else if (this->currentScreen == 2) {
-	  this->modelListener->SetConfTopBar(cpuTemp, this->sensorTemp, screenFrames);
+	  this->modelListener->SetConfTopBar(this->cpuTemp, this->sensorTemp, screenFrames);
   }
 
 
