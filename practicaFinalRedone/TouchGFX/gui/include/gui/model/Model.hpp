@@ -18,9 +18,12 @@ public:
 
     void cli_cam_temp();
 	void send_cam_temp();
+
+	void Unknow			(uint8_t index);
 	void SendHelp();
-	void Unknow(uint8_t index);
-	void SendCamFrame(float *frame);
+	void TurnCam		(bool state);
+	void SendCamFrame	(float *frame);
+	void SetCamRate		(int8_t value);
 
 	void	SetCurrentScreen(uint8_t screen);
 

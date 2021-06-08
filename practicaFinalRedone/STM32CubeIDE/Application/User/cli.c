@@ -89,6 +89,23 @@ int process_cli_command(uint8_t temporal_command[], App_Message *app_command) {
 	  //          Si no se encuentra el comando se devuelve el mensaje de Comando desconocido.
 	  if ( (memcmp(temporal_command, cli_command_list[command_index].key, strlen(cli_command_list[command_index].key)) == 0)) {
 		  app_command->message_code = (int8_t)cli_command_list[command_index].command_code;
+
+		  if (cli_command_list[command_index].has_parameter) {
+			  uint8_t count = 0;
+
+			  // Como las str acaban con un \0, al sumar 1 se salta el carácter espacio y pasa al comando
+			  int inicio 	= strlen(cli_command_list[command_index].key) + 1;
+
+			  for (int i = inicio; i < 20; i++) {
+				  if (temporal_command[i] != '\r') {
+					  app_command->data[count] = temporal_command[i];
+					  count++;
+				  } else { break;}
+			  }
+
+			  app_command->data[count] = ';';		// Carácter para indicar el final del dato
+		  }
+
 		  commandFind = 1;
 		  break;
 	  }
@@ -149,5 +166,37 @@ void cli_processing_task(void *argument)
 		if (os_queue_status != osOK) { printf("Queue Failure\r\n"); }
     }
   }
+}
+
+/**
+ * @brief Esta función se encarga de transformar los datos de la cola de mensajes a un valor asignable.
+ *
+ * @param message: puntero a los datos del mensaje
+ */
+
+int8_t MessageToValue(uint8_t *message)
+{
+	uint8_t count = 0;
+	int8_t	value = 0;
+
+	for (int i = 0; i < 20; i++) {
+
+		if (message[i] == ';') {
+			break;
+
+		} else {
+			count++;
+		}
+	}
+
+	if (count != 0) {
+
+		for (int i = 0; i < count; i++) {
+			value += (message[i] - 0x30)*10*(count - 1 - i);
+		}
+		value += (message[(count - 1)] - 0x30);
+	} else { value = -1; }
+
+	return value;
 }
 

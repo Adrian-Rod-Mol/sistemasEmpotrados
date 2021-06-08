@@ -129,11 +129,20 @@ void Model::tick()
 	  case APP_HELP_COMMAND:
 		  this->SendHelp();
 		  break;
+	  case APP_TURN_ON_CAM:
+		  this->TurnCam(true);
+		  break;
+	  case APP_TURN_OFF_CAM:
+		  this->TurnCam(false);
+		  break;
 	  case APP_SEND_CAM_TEMP:
 		  this->send_cam_temp();
 		  break;
 	  case APP_SEND_CAM_FRAME:
 		  this->SendCamFrame(frame);
+		  break;
+	  case APP_SET_CAM_RATE:
+		  this->SetCamRate(MessageToValue(app_message->data));
 		  break;
 	  default:
 		  break;
@@ -190,6 +199,13 @@ void Model::SendHelp()
 }
 
 /***************************************************************/
+void Model::TurnCam(bool state)
+{
+	this->ChangeBitmapState(!state);
+	this->modelListener->SetBitmapVisibility(this->camState);
+}
+
+/***************************************************************/
 void Model::SendCamFrame(float *frame)
 {
 
@@ -226,13 +242,25 @@ void Model::SendCamFrame(float *frame)
 }
 
 /***************************************************************/
+void Model::SetCamRate(int8_t value)
+{
+	if (value > 0 && value < 11) {
+		this->fps = value;
+		this->modelListener->SetFPSValue(this->fps);
+	} else {
+		printf("Invalid value: Please introduce a valid value\r\n");
+	}
+
+}
+
+/***************************************************************/
 /*** MÉTODOS DE LA PANTALLA PRINCIPAL ***/
 
 /***************************************************************/
 void Model::ChangeBitmapState(bool state)
 {
 	osStatus_t osCamStatus;
-	this->camState = !(this->camState);
+	this->camState = !(state);
 
 	if (this->camState) {
 

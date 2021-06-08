@@ -14,6 +14,7 @@
 #define CLI_CAM_OFF_CODE	3
 #define CLI_CAM_TEMP_CODE   4
 #define CLI_CAM_FRAME_CODE  5
+#define CLI_CAM_SRATE_CODE	6
 
 #define APP_UNKNOWN_COMMAND 0
 #define APP_HELP_COMMAND    1
@@ -21,6 +22,8 @@
 #define APP_TURN_OFF_CAM	3
 #define APP_SEND_CAM_TEMP   4
 #define APP_SEND_CAM_FRAME  5
+#define APP_SET_CAM_RATE	6
+#define APP_GET_CAM_RATE	7
 
 typedef void *(SFPointer)(void);
 
