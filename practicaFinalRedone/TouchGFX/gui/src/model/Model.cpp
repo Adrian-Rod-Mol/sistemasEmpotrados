@@ -78,6 +78,10 @@ void Model::tick()
   os_status = osMessageQueueGet(cpuTempQueueHandle, &cpuTemp, 0, 2);
   if (os_status == osOK) {
 	this->cpuTemp = cpuTemp;
+
+	if (this->echo) {
+		this->SendCPUTemp();
+	}
   }
 
   os_status = osMessageQueueGet(temp_queueHandle, &sensorTemp, 0, 2);
@@ -139,10 +143,39 @@ void Model::tick()
 		  this->send_cam_temp();
 		  break;
 	  case APP_SEND_CAM_FRAME:
-		  this->SendCamFrame(frame);
+		  this->SendCamFrame(frame, false);
+		  break;
+	  case APP_SEND_RAW_FRAME:
+		  this->SendCamFrame(frame, true);
 		  break;
 	  case APP_SET_CAM_RATE:
 		  this->SetCamRate(MessageToValue(app_message->data));
+		  break;
+	  case APP_GET_CAM_RATE:
+		  this->GetCamRate();
+		  break;
+	  case APP_SET_MAX_TEMP:
+		  this->SerialSetMaxTemp(MessageToValue(app_message->data));
+		  break;
+	  case APP_GET_MAX_TEMP:
+		  this->SerialGetMaxTemp();
+		  break;
+	  case APP_SET_MIN_TEMP:
+		  this->SerialSetMinTemp(MessageToValue(app_message->data));
+		  break;
+	  case APP_GET_MIN_TEMP:
+		  this->SerialGetMinTemp();
+		  break;
+	  case APP_SEND_CPU_TEMP:
+		  this->SendCPUTemp();
+		  break;
+	  case APP_ECHO_ON:
+		  this->echo = true;
+		  printf("    VALUE SET CORRECTLY\r\n");
+		  break;
+	  case APP_ECHO_OFF:
+		  this->echo = false;
+		  printf("    VALUE SET CORRECTLY\r\n");
 		  break;
 	  default:
 		  break;
@@ -160,13 +193,10 @@ void Model::tick()
 	  this->screenFrames = (float)1000000 / value;
 	  this->count = 0;
   }
-
-
 }
 
-/***************************************************************/
-/*** GESTIÓN DE MENSAJES ***/
 
+/*** GESTIÓN DE MENSAJES ***/
 /***************************************************************/
 void Model::send_cam_temp()
 {
@@ -206,7 +236,7 @@ void Model::TurnCam(bool state)
 }
 
 /***************************************************************/
-void Model::SendCamFrame(float *frame)
+void Model::SendCamFrame(float *frame, bool raw)
 {
 
   osStatus_t  os_status;
@@ -219,17 +249,30 @@ void Model::SendCamFrame(float *frame)
 
 	for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }
 
+	if (raw) {
+		uint16_t rawFrame;
+		printf("    RAW FRAME (%cC):", 0xB0);
 
-	printf("    CAM FRAME (%cC):", 0xB0);
-
-	for (int i = 0; i < 8; i++) {
-		printf(" \r\n  ");
-		for (int j = 0; j < 8; j++) {
-			printf("%3.2f  ", this->frame[ (i * 8) + j ]);
+		for (int i = 0; i < 8; i++) {
+			printf(" \r\n  ");
+			for (int j = 0; j < 8; j++) {
+				rawFrame = (uint16_t)(this->frame[ (i * 8) + j ] / 0.25);
+				printf("%5d  ", rawFrame);
+			}
 		}
-	}
-	printf(" \r\n");
+		printf(" \r\n");
 
+	} else {
+		printf("    CAM FRAME (%cC):", 0xB0);
+
+		for (int i = 0; i < 8; i++) {
+			printf(" \r\n  ");
+			for (int j = 0; j < 8; j++) {
+				printf("%3.2f  ", this->frame[ (i * 8) + j ]);
+			}
+		}
+		printf(" \r\n");
+	}
   }
 
   os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
@@ -247,10 +290,64 @@ void Model::SetCamRate(int8_t value)
 	if (value > 0 && value < 11) {
 		this->fps = value;
 		this->modelListener->SetFPSValue(this->fps);
+		printf("    VALUE SET CORRECTLY\r\n");
+
 	} else {
 		printf("Invalid value: Please introduce a valid value\r\n");
 	}
 
+}
+
+/***************************************************************/
+void Model::GetCamRate()
+{
+	printf("    CAM FRAME RATE: %2d FPS.\r\n", this->fps);
+}
+
+/***************************************************************/
+void Model::SerialSetMaxTemp(int8_t value)
+{
+	if (value > (this->minTemp + 5) && value < 60) {
+		this->maxTemp = value;
+		this->modelListener->SetMaxTempValue(this->maxTemp);
+		printf("    VALUE SET CORRECTLY\r\n");
+
+	} else {
+		printf("Invalid value: Please introduce a valid value\r\n");
+	}
+
+}
+
+/***************************************************************/
+void Model::SerialGetMaxTemp()
+{
+	printf("    IMAGE SCALE MAX TEMP (%cC): %2d .\r\n", 0xB0, this->maxTemp);
+}
+
+/***************************************************************/
+void Model::SerialSetMinTemp(int8_t value)
+{
+	if (value > 0 && value < (this->maxTemp - 5)) {
+		this->minTemp = value;
+		this->modelListener->SetMinTempValue(this->minTemp);
+		printf("    VALUE SET CORRECTLY\r\n");
+
+	} else {
+		printf("Invalid value: Please introduce a valid value\r\n");
+	}
+
+}
+
+/***************************************************************/
+void Model::SerialGetMinTemp()
+{
+	printf("    IMAGE SCALE MIN TEMP (%cC): %2d .\r\n", 0xB0, this->minTemp);
+}
+
+/***************************************************************/
+void Model::SendCPUTemp()
+{
+	printf("    CPU TEMPERATURE: %3.3f %cC.\r\n", this->cpuTemp, 0xB0);
 }
 
 /***************************************************************/
@@ -285,7 +382,7 @@ void Model::SendScreenshot()
 	if (this->camState) {
 		float* frame = NULL;
 		printf("\r\n");
-		this->SendCamFrame(frame);
+		this->SendCamFrame(frame, false);
 		PrintPointer();
 	} else {
 		printf("Camara desactivada, activela para usar esta funcion.\r\n");
@@ -323,6 +420,18 @@ void Model::ChangeFPSValue(bool operation)
 		if (this->fps > 1) {
 			this->fps = this->fps - 1;
 		}
+	}
+
+	if (this->camState) {
+		osStatus_t osEmptyQueue;
+		this->frameDelay = 1000 / this->fps;
+
+		osEmptyQueue = osMessageQueueReset(framerateQueueHandle);
+
+		if (osEmptyQueue == osOK) {
+			osMessageQueuePut(framerateQueueHandle, ((void*) &this->frameDelay), 0, 0);
+		}
+
 	}
 }
 
