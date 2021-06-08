@@ -18,16 +18,20 @@
 
 extern UART_HandleTypeDef huart1;
 
-extern osMessageQueueId_t charQueueHandle;
-extern osMessageQueueId_t messageQueueHandle;
+extern osMessageQueueId_t 	charQueueHandle;
+extern osMessageQueueId_t 	messageQueueHandle;
+extern osMutexId_t 			serialPortMutexHandle;
 
 osStatus_t  os_status;
 osStatus_t  os_queue_status;
 
 
+
 uint8_t input_buffer[20];
 uint8_t index_buffer = 0;
 uint8_t input_char;
+
+uint8_t mutex = 0;
 
 osMemoryPoolId_t command_MemPool; /**< Pool de memoria para los comandos **/
 
@@ -136,35 +140,39 @@ void cli_processing_task(void *argument)
   uint8_t command_size = 0;
   uint8_t temporal_command[20];
 
+
   App_Message *app_message = NULL;
 
   for(;;)
   {
 
-    // [x] 8: Esperar hasta recibir un caracter de la cola char_queue que almacenaremos en la variable new_char
-	  os_status = osMessageQueueGet(charQueueHandle, &new_char, 0, -1);
-	// [x] 9: Almacenar el caracter en el array temporal_command hasta recibir el '\n'
-	//         es conveniente contar el número de caracteres recibidos en la variable command_size
-	  if (os_status == osOK) {
-		  temporal_command[command_size] = new_char;
-		  command_size++;
+	os_status = osMessageQueueGet(charQueueHandle, &new_char, 0, osWaitForever);
 
-	  }
+	if (mutex == 0) {
+		osMutexAcquire(serialPortMutexHandle, 10000);
+		mutex = 1;
+	}
 
-    if (new_char == '\n' && command_size > 1) {
-    	index_buffer = 0;
-    	command_size = 0;
-      // [x] 10: Reservar espacio en el Pool con osMemoryPoolAlloc
-    	app_message = osMemoryPoolAlloc(command_MemPool, 10000);
+	if (os_status == osOK) {
+		temporal_command[command_size] = new_char;
+		command_size++;
 
-      // [x] 11: Procesar la cadena recibida en una función a la que le pasamos la cadena y el puntero al espacio de
-      //          Memoria reservado en el Pool
-        process_cli_command(temporal_command, app_message);
+	}
 
-      // [x] 12: Enviar el mensaje generado por la funcion anterior a la cola de mensajes para el Modelo.
+	if (new_char == '\n' && command_size > 1) {
+		index_buffer = 0;
+		command_size = 0;
+
+		app_message = osMemoryPoolAlloc(command_MemPool, 10000);
+
+		process_cli_command(temporal_command, app_message);
+
+		osMutexRelease(serialPortMutexHandle);
+		mutex = 0;
+
 		os_queue_status = osMessageQueuePut(messageQueueHandle, (void*)&app_message, 0, 0);
 		if (os_queue_status != osOK) { printf("Queue Failure\r\n"); }
-    }
+	}
   }
 }
 

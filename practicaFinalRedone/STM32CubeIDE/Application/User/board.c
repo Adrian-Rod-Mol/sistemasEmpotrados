@@ -9,14 +9,21 @@
 /***************************************************************/
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_adc.h"
+#include "main.h"
 #include "cmsis_os2.h"
 #include <stdio.h>  // Para el printf
 
 
+/* Defines */
+/***************************************************************/
+#define BUTTON_FLAG 			(0x01<<2)	/**< @brief Flag que indica que se ha pulsado el botón */
+
+
 /* Handlers */
 /***************************************************************/
-extern ADC_HandleTypeDef hadc1;
-extern osMessageQueueId_t cpuTempQueueHandle;
+extern ADC_HandleTypeDef 	hadc1;
+extern osMessageQueueId_t 	cpuTempQueueHandle;
+extern osEventFlagsId_t  	userButtonEventHandle;
 
 
 /* Function Declaration */
@@ -87,4 +94,19 @@ HAL_StatusTypeDef ReadTemperatureCPU(uint16_t *rawTemperature)
 
 	HAL_ADC_Stop(&hadc1);
 	return opSuccess;
+}
+
+
+/* Callback */
+/***************************************************************/
+/**
+ * @brief Función que se activa con el boton de usuario, activa el evento de cámara
+ * 		  por puerto serie
+ *
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if (HAL_GPIO_ReadPin(USR_BTN_GPIO_Port, USR_BTN_Pin) == GPIO_PIN_SET) {
+		osEventFlagsSet(userButtonEventHandle, BUTTON_FLAG);
+	}
 }

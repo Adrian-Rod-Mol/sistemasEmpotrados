@@ -8,6 +8,7 @@
 
 
 #define FRAME_FLAG 				(0x01<<1)	/**< @brief Flag que inicia lectura del frame de la cámara */
+#define BUTTON_FLAG 			(0x01<<2)	/**< @brief Flag que indica que se ha pulsado el botón */
 
 extern "C" {
 
@@ -18,6 +19,7 @@ extern "C" {
   extern osMessageQueueId_t	temp_queueHandle;
   extern TIM_HandleTypeDef 	htim2;
 
+  extern osMutexId_t 		serialPortMutexHandle;
   extern osMessageQueueId_t messageQueueHandle;
   extern osMemoryPoolId_t 	command_MemPool;
 
@@ -25,6 +27,9 @@ extern "C" {
   extern osMessageQueueId_t framerateQueueHandle;
   extern osEventFlagsId_t 	readFrameEventHandle;
   extern osMemoryPoolId_t 	frame_MemPool;
+
+  extern osEventFlagsId_t 	userButtonEventHandle;
+
 
 
 }
@@ -40,6 +45,8 @@ Model::Model() : modelListener(0)
 
 	this->screenFrames 	= 60.0;
 	this->count = 0;
+
+	this->echo = false;
 
 
 }
@@ -65,6 +72,8 @@ void Model::tick()
   osStatus_t  		os_status;
   osStatus_t  		os_msg_status;
   osStatus_t  		os_pool_status;
+  osStatus_t  		osMutexStatus;
+  uint32_t  		eventStatus;
 
   App_Message *app_message = NULL;
 
@@ -80,7 +89,14 @@ void Model::tick()
 	this->cpuTemp = cpuTemp;
 
 	if (this->echo) {
-		this->SendCPUTemp();
+		osMutexStatus = osMutexAcquire(serialPortMutexHandle, 5);
+
+		if (osMutexStatus == osOK) {
+
+			this->SendCPUTemp();
+			PrintPointer();
+			osMutexRelease(serialPortMutexHandle);
+		}
 	}
   }
 
@@ -185,6 +201,14 @@ void Model::tick()
 	  if (os_pool_status != osOK) printf("Pool Failure\r\n");
 	  PrintPointer();
 
+  }
+
+  eventStatus = osEventFlagsWait(userButtonEventHandle, BUTTON_FLAG, osFlagsWaitAll, 2);
+  if (eventStatus == BUTTON_FLAG) {
+	  printf(" \r\n");
+	  this->SendCamFrame(frame, false);
+	  PrintPointer();
+	  eventStatus = 0;
   }
 
   value = __HAL_TIM_GET_COUNTER(&htim2);

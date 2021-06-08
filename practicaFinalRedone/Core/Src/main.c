@@ -153,10 +153,20 @@ osMutexId_t camAccessMutexHandle;
 const osMutexAttr_t camAccessMutex_attributes = {
   .name = "camAccessMutex"
 };
+/* Definitions for serialPortMutex */
+osMutexId_t serialPortMutexHandle;
+const osMutexAttr_t serialPortMutex_attributes = {
+  .name = "serialPortMutex"
+};
 /* Definitions for readFrameEvent */
 osEventFlagsId_t readFrameEventHandle;
 const osEventFlagsAttr_t readFrameEvent_attributes = {
   .name = "readFrameEvent"
+};
+/* Definitions for userButtonEvent */
+osEventFlagsId_t userButtonEventHandle;
+const osEventFlagsAttr_t userButtonEvent_attributes = {
+  .name = "userButtonEvent"
 };
 /* USER CODE BEGIN PV */
 
@@ -258,7 +268,6 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
-
   MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start(&htim2);
@@ -271,6 +280,9 @@ int main(void)
   /* Create the mutex(es) */
   /* creation of camAccessMutex */
   camAccessMutexHandle = osMutexNew(&camAccessMutex_attributes);
+
+  /* creation of serialPortMutex */
+  serialPortMutexHandle = osMutexNew(&serialPortMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -329,6 +341,9 @@ int main(void)
 
   /* creation of readFrameEvent */
   readFrameEventHandle = osEventFlagsNew(&readFrameEvent_attributes);
+
+  /* creation of userButtonEvent */
+  userButtonEventHandle = osEventFlagsNew(&userButtonEvent_attributes);
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
@@ -828,12 +843,22 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : USR_BTN_Pin */
+  GPIO_InitStruct.Pin = USR_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USR_BTN_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PD12 PD13 */
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 
