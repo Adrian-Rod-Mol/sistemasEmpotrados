@@ -5,6 +5,8 @@
  *      Author: edavidfs
  *
  *  Modified by: Adrian-Rod-Mol
+ *  @brief este archivo contiene las tareas que se encargan de leer tanto la temperatura del termistor de la 
+ *         cámara como el registro en el que se guardan los píxeles del sensor infrarojo de la cámara.
  */
 
 /* Includes */
