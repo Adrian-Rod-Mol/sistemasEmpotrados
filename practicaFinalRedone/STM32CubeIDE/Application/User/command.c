@@ -5,6 +5,10 @@
  *      Author: edavidfs
  *
  *  Modified by: Adrian-Rod-Mol
+ *
+ *  @brief este archivo contiene la definicíon de todos los comandos admitidos por el puerto serie, las rutinas de 
+ *         servicio que se usan para describir los comandos y algunas funciones usadas para mejorar la apariencia de 
+ *         la interfaz del puerto serie. En su header se define el struct usado para crear los comandos.
  */
 
 /* Includes */
