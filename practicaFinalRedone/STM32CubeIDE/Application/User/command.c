@@ -3,15 +3,22 @@
  *
  *  Created on: 30 abr. 2021
  *      Author: edavidfs
+ *
+ *  Modified by: Adrian-Rod-Mol
  */
 
+/* Includes */
+/***************************************************************/
 #include "main.h"
 #include "command.h"
 #include "stm32f4xx_hal.h"
-#include <stdio.h>  // Para el printf
+#include <stdio.h>
 #include <stdlib.h>
 
 
+/* Defines */
+/***************************************************************/
+/** @brief Estructura => Nombre del comando - código del comando - dato/no dato - descripción - función que muestra la descripción */
 #define UNKNOWN_CLI_COMMAND 		{0,0,0,"Comando desconocido",(void*)unknown_cli_cmd }
 #define HELP_CLI_COMMAND 			{"help", 			CLI_HELP_CODE, 		0, "Comandos del programa", (void*)help_cli_cmd }
 #define CAM_ON_CLI_COMMAND 			{"cam on" , 		CLI_CAM_ON_CODE , 	0, "Enciende la cámara", (void*)cam_on_cli_cmd }
@@ -29,8 +36,11 @@
 #define CPU_ECHO_ON_CLI_COMMAND 	{"cpu echo on" , 	CLI_ECHO_ON_CODE, 	0, "Envía la temperatura de la cpu periodicamente", (void*)cpu_echo_on_cli_cmd }
 #define CPU_ECHO_OFF_CLI_COMMAND 	{"cpu echo off" , 	CLI_ECHO_OFF_CODE, 	0, "Deja de enviar la temperatura de la cpu", (void*)cpu_echo_off_cli_cmd }
 
-
 extern UART_HandleTypeDef huart1;
+
+
+/* Declaración de funciones */
+/***************************************************************/
 void help_cli_cmd(void);
 void cam_on_cli_cmd(void);
 void cam_off_cli_cmd(void);
@@ -48,7 +58,8 @@ void cpu_echo_on_cli_cmd(void);
 void cpu_echo_off_cli_cmd(void);
 
 
-
+/* Array de estructuras */
+/***************************************************************/
 CLI_Command cli_command_list[] = {
 	HELP_CLI_COMMAND,
 	CAM_ON_CLI_COMMAND,
@@ -69,103 +80,132 @@ CLI_Command cli_command_list[] = {
     UNKNOWN_CLI_COMMAND
 };
 
+
+/* Funciones de descripción de los comandos */
+/***************************************************************/
 void help_cli_cmd(void)
 {
   printf("         Solicitar comandos del programa\r\n");
 }
 
+/***************************************************************/
 void cam_on_cli_cmd(void)
 {
   printf("       Enciende la camara\r\n");
 }
+
+/***************************************************************/
 void cam_off_cli_cmd(void)
 {
   printf("      Apaga la camara\r\n");
 }
 
+/***************************************************************/
 void cam_srate_cli_cmd(void)
 {
   printf(" Establece el framerate de la camara\r\n");
 }
 
+/***************************************************************/
 void cam_grate_cli_cmd(void)
 {
   printf(" Devuelve el framerate de la camara\r\n");
 }
 
-
+/***************************************************************/
 void cam_temp_cli_cmd(void)
 {
   printf("     Solicitar datos Temperatura\r\n");
 }
 
+/***************************************************************/
 void cam_frame_cli_cmd(void)
 {
   printf("    Solicitar datos de la matriz de temperatura\r\n");
 }
 
+/***************************************************************/
 void raw_frame_cli_cmd(void)
 {
   printf("      Solicitar datos raw de la matriz de temperatura\r\n");
 }
 
+/***************************************************************/
 void stemp_max_cli_cmd(void)
 {
   printf(" Establece la temperatura maxima de la escala del frame\r\n");
 }
 
+/***************************************************************/
 void gtemp_max_cli_cmd(void)
 {
   printf(" Devuelve la temperatura maxima de la escala del frame\r\n");
 }
 
+/***************************************************************/
 void stemp_min_cli_cmd(void)
 {
   printf(" Establece la temperatura minima de la escala del frame\r\n");
 }
 
+/***************************************************************/
 void gtemp_min_cli_cmd(void)
 {
   printf(" Devuelve la temperatura minima de la escala del frame\r\n");
 }
 
+/***************************************************************/
 void cpu_temp_cli_cmd(void)
 {
   printf("     Devuelve la temperatura de la cpu\r\n");
 }
 
+/***************************************************************/
 void cpu_echo_on_cli_cmd(void)
 {
   printf("  Envia la temperatura de la cpu cada 500 ms\r\n");
 }
 
+/***************************************************************/
 void cpu_echo_off_cli_cmd(void)
 {
   printf(" Deja de enviar la temperatura de la cpu cada 500 ms\r\n");
 }
 
+/***************************************************************/
 void unknown_cli_cmd(void)
 {
   printf("Comando desconocido\r\n");
 }
 
+
+/* Funciones de interfaz */
+/***************************************************************/
 void PrintSeparator(void)
 {
 	printf("###########################################################\r\n");
 }
 
-
+/***************************************************************/
+/** @brief Envía por el puerto serie el indicador de línea de comando */
 void PrintPointer(void)
 {
 	printf("setr-p4 >> ");
 	fflush(stdout);
 }
 
+/***************************************************************/
+/**
+ * @brief Muestra la cabecera que corresponda
+ *
+ * @param section - 1: cabecera del programa, 2: cabecera de los comandos de ayuda
+ */
 void PrintHeader(char section)
 {
 	float year1 = 20.0;
 	float year2 = 21.0;
-	printf("###########################################################\r\n");
+
+	PrintSeparator();
 
 	switch(section)
 	{
@@ -178,5 +218,6 @@ void PrintHeader(char section)
 	default:
 		break;
 	}
-	printf("###########################################################\r\n");
+
+	PrintSeparator();
 }

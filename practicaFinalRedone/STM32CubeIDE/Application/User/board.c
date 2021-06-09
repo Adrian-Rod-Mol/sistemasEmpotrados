@@ -2,7 +2,7 @@
  * board.c
  *
  *  Created on: 7 jun. 2021
- *      Author: Admar
+ *      Author: Adrian-Rod-Mol
  */
 
 /* Includes */
@@ -34,7 +34,7 @@ HAL_StatusTypeDef ReadTemperatureCPU(uint16_t *rawTemperature);
 /* Tasks */
 /***************************************************************/
 /**
- * @brief Función que implementa la medida de la temperatura de la cpu
+ * @brief Función que implementa la medida de la temperatura de la cpu cada 500 ticks
  * @param argument: Not used
  * @retval None
  */
@@ -53,7 +53,7 @@ void CpuTemp(void *argument)
 	halStatus = ReadTemperatureCPU(&rawTemperature);
 
 	if (halStatus == HAL_OK){
-	  // V medida = adc value * (vlotaje alimentación/adc total bits)
+	  // V medida = adc value * (voltaje alimentación/adc total bits)
 	  temperature = ((float) rawTemperature)*(3.3/4095);
 	  // Temperatura corregida con los datos de la hoja de características del sensor
 	  temperature = ((temperature - 0.76)/0.0025) + 25;
@@ -66,33 +66,33 @@ void CpuTemp(void *argument)
   }
 }
 
+
 /* Function */
 /***************************************************************/
 /**
- * @brief Función que lee la temperatura de laCPU a través del ADC
+ * @brief Función que lee la temperatura de la CPU a través del ADC
  * @param rawTemperature: 	Not used
  * @retval opSuccess:		Estado de la operación de la medida
  */
-
 HAL_StatusTypeDef ReadTemperatureCPU(uint16_t *rawTemperature)
 {
 	HAL_StatusTypeDef initStatus;
 	HAL_StatusTypeDef opSuccess;
 
-	initStatus = HAL_ADC_Start(&hadc1);
+	initStatus = HAL_ADC_Start(&hadc1);						// Inicia la lectura del ADC
 
 	if (initStatus == HAL_OK) {
-		opSuccess = HAL_ADC_PollForConversion(&hadc1, 100);
+		opSuccess = HAL_ADC_PollForConversion(&hadc1, 100);	// Espera a que se realice la conversión
 
 		if (opSuccess == HAL_OK) {
-			*rawTemperature = HAL_ADC_GetValue(&hadc1);
+			*rawTemperature = HAL_ADC_GetValue(&hadc1);		// Extrae el valor del registro
 		}
 
 	} else {
 		return initStatus;
 	}
 
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop(&hadc1);									// Desactiva el ADC
 	return opSuccess;
 }
 

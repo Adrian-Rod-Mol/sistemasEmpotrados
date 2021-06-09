@@ -1,10 +1,14 @@
 /*
- * parser.c
+ * cli.c
  *
  *  Created on: 25 abr. 2021
  *      Author: edavidfs
+ *
+ *  Modified by: Adrian-Rod-Mol
  */
 
+/* Includes */
+/***************************************************************/
 #include "stm32f4xx_hal.h"
 #include <cmsis_os2.h>
 
@@ -16,7 +20,9 @@
 #include <stdio.h>  // Para el printf
 
 
-extern UART_HandleTypeDef huart1;
+/* Handlers del hardware */
+/***************************************************************/
+extern UART_HandleTypeDef	huart1;
 
 extern osMessageQueueId_t 	charQueueHandle;
 extern osMessageQueueId_t 	messageQueueHandle;
@@ -26,80 +32,85 @@ osStatus_t  os_status;
 osStatus_t  os_queue_status;
 
 
-
+/* Variables de control */
+/***************************************************************/
 uint8_t input_buffer[20];
 uint8_t index_buffer = 0;
 uint8_t input_char;
 
+/** @brief Controla que no se intenten adquirir varias veces el mutex de puerto serie **/
 uint8_t mutex = 0;
 
-osMemoryPoolId_t command_MemPool; /**< Pool de memoria para los comandos **/
+osMemoryPoolId_t command_MemPool; 	/**< @brief Pool de memoria para los comandos **/
 
+
+/* Funciones y tareas */
+/***************************************************************/
 /**
- * @brief Inicio de la funcionalidad de Command Line Interface.
+ * @brief Función de inicio de la funcionalidad de Command Line Interface.
  *
  */
-void cli_init(){
-
+void cli_init()
+{
   PrintHeader(1);
 
-  // [x] 1: Crear el Pool de memoria y almacenar el identificador en la variable global command_MemPool
+  // Crear el Pool de memoria y almacenar el identificador en la variable global command_MemPool
   command_MemPool = osMemoryPoolNew(MEMPOOL_OBJECTS, sizeof(App_Message), NULL);
 
-  // [x] 2: Inicia la lectura caracteres de la UART por interrupción
+  // Inicia la lectura caracteres de la UART por interrupción
   HAL_UART_Receive_IT(&huart1, &input_char, sizeof(input_char));
   PrintPointer();
 
 }
 
-
+/***************************************************************/
 /**
  * @brief UART Receive Complete Callback
  */
-// [x] 3: Crear la Rutina de servicio de la interrucpión de la UART al recibir un caracter.
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  input_buffer[index_buffer] = input_char;
 
-  // [x] 4: Almacenar el valor recibido
-	input_buffer[index_buffer] = input_char;
-  // [x] 5: Introducirlo a la Cola de caracteres
-	osMessageQueuePut(charQueueHandle, (void *) &input_buffer[index_buffer], 0, 0);
-  // [x] 6: Enviar el Caracter por la UART para que el usuario tenga feedback de lo que está escribiendo
-	printf("%c", input_buffer[index_buffer]);
-	fflush(stdout);
-	index_buffer++;
-  // [x] 7: Solicitar un nuevo caracter a la UART
-	HAL_UART_Receive_IT(&huart1, &input_char, sizeof(input_char));
+  osMessageQueuePut(charQueueHandle, (void *) &input_buffer[index_buffer], 0, 0);
 
+  // Enviar el Caracter por la UART para que el usuario tenga feedback de lo que está escribiendo
+  printf("%c", input_buffer[index_buffer]);
+  fflush(stdout);
+  index_buffer++;
+
+  HAL_UART_Receive_IT(&huart1, &input_char, sizeof(input_char)); // Solicita un nuevo caracter a la UART
 
 }
 
-
+/***************************************************************/
 /**
  * @brief Compara la cadena de texto recibida con la lista de comandos existentes
  *        Si la encuentra complenta el mensaje de aplicación, de lo contrario envia un codigo de mensaje desconocido
  *
- * @param temporal_command
- * @param size_command
+ * @param temporal_command: comando que ha llegado por el puerto serie
+ * @param app_command:		pool de memoria en el que se almacena el mensaje
  * @return
  */
-int process_cli_command(uint8_t temporal_command[], App_Message *app_command) {
-
+void process_cli_command(uint8_t temporal_command[], App_Message *app_command)
+{
   int command_index = 0;
   uint8_t commandFind = 0;
 
-  // [x] 13: Recorrer el array de comandos cli_command_list comparando el parámetro key con la cadena recibida,
+  // Recorre el array de comandos cli_command_list comparando el parámetro key con la cadena recibida
   while (cli_command_list[command_index].key[0] != 0) {
-	  // [x] 14: En caso de encontrar el comando completar el mensaje con el código/identidicador correspondiente
-	  //          Si no se encuentra el comando se devuelve el mensaje de Comando desconocido.
+	  // En caso de encontrar el comando completar el mensaje con el código/identidicador correspondiente
+	  // Si no se encuentra el comando se devuelve el mensaje de Comando desconocido.
 	  if ( (memcmp(temporal_command, cli_command_list[command_index].key, strlen(cli_command_list[command_index].key)) == 0)) {
 		  app_command->message_code = (int8_t)cli_command_list[command_index].command_code;
 
+		  // Si al comando va asociado un parámetro lo almacena
 		  if (cli_command_list[command_index].has_parameter) {
 			  uint8_t count = 0;
 
 			  // Como las str acaban con un \0, al sumar 1 se salta el carácter espacio y pasa al comando
 			  int inicio 	= strlen(cli_command_list[command_index].key) + 1;
 
+			  // Almacena todos los carácteres hasta el '\r'
 			  for (int i = inicio; i < 20; i++) {
 				  if (temporal_command[i] != '\r') {
 					  app_command->data[count] = temporal_command[i];
@@ -117,16 +128,15 @@ int process_cli_command(uint8_t temporal_command[], App_Message *app_command) {
     command_index++;
   }
 
+  // Si no se encuentra el comando se envía el código de comando desconocido
   if (!commandFind) {
 	  app_command->message_code = (int8_t)cli_command_list[command_index].command_code;
-	  app_command->data[0] = command_index;
+	  app_command->data[0] = command_index;		// Se usa para llamar a la rutina de servicio de comando desconocido
   }
 
-  // [x] 16: Opcionalmente se puede devolver el código de comando o de mensaje encontrado si se desea realizar
-  //          alguna operación extra.
-  return commandFind;
 }
 
+/***************************************************************/
 /**
  * @brief Esta tarea recibe caracteres por una cola y va formando un comando. Cuando se recibe el caracter que indica una nueva línea
  * se procesa la cadena recibida para crear un mensaje interno de la aplicación y se envia por la cola al Modelo para que procese el
@@ -149,6 +159,7 @@ void cli_processing_task(void *argument)
 	os_status = osMessageQueueGet(charQueueHandle, &new_char, 0, osWaitForever);
 
 	if (mutex == 0) {
+		// Mutex usado para que no se interrumpa la escritura del mensaje
 		osMutexAcquire(serialPortMutexHandle, 10000);
 		mutex = 1;
 	}
@@ -163,10 +174,12 @@ void cli_processing_task(void *argument)
 		index_buffer = 0;
 		command_size = 0;
 
+		// Cuando se ha recibido el mensaje completo se procesa y se envía al modelo
 		app_message = osMemoryPoolAlloc(command_MemPool, 10000);
 
 		process_cli_command(temporal_command, app_message);
 
+		// Se libera el mutex del puerto serie
 		osMutexRelease(serialPortMutexHandle);
 		mutex = 0;
 
@@ -176,35 +189,37 @@ void cli_processing_task(void *argument)
   }
 }
 
+/***************************************************************/
 /**
  * @brief Esta función se encarga de transformar los datos de la cola de mensajes a un valor asignable.
  *
  * @param message: puntero a los datos del mensaje
  */
-
 int8_t MessageToValue(uint8_t *message)
 {
-	uint8_t count = 0;
-	int8_t	value = 0;
+  uint8_t 	count = 0;	// Tamaño del mensaje
+  int8_t	value = 0;	// Valor del parámetro extraído del mensaje
 
-	for (int i = 0; i < 20; i++) {
+  // Comprueba el tamaño del mensaje
+  for (int i = 0; i < 20; i++) {
 
-		if (message[i] == ';') {
-			break;
+    if (message[i] == ';') {  break; } // ';' indica fin del parámetro
+    else { count++; }
 
-		} else {
-			count++;
-		}
+  }
+
+  if (count != 0) {
+
+	for (int i = 0; i < count; i++) {
+	  // Modifica el valor de la variable recibida en función de los carácteres recibidos
+	  value += (message[i] - 0x30)*10*(count - 1 - i);
+
 	}
 
-	if (count != 0) {
+	value += (message[(count - 1)] - 0x30);		// Unidades del mensaje (char ascii - 0x30 = número que le corresponde)
 
-		for (int i = 0; i < count; i++) {
-			value += (message[i] - 0x30)*10*(count - 1 - i);
-		}
-		value += (message[(count - 1)] - 0x30);
-	} else { value = -1; }
+  } else { value = -1; }	// Indica mensaje sin valor
 
-	return value;
+  return value;
 }
 

@@ -15,6 +15,7 @@ void ConfScreenView::tearDownScreen()
     ConfScreenViewBase::tearDownScreen();
 }
 
+
 /* Botones */
 /***************************************************************/
 /**
@@ -25,6 +26,7 @@ void ConfScreenView::PlusFPS()
 	this->presenter->ChangeFPSValue(true);
 }
 
+/***************************************************************/
 /**
  * @brief Método CallBack para disminuir el valor de los FPS
  */
@@ -33,38 +35,38 @@ void ConfScreenView::MinusFPS()
 	this->presenter->ChangeFPSValue(false);
 }
 
+
 /***************************************************************/
 /**
- * @brief Método CallBack para aumentar el valor de la
- * 		  máxima temperatura
+ * @brief Método CallBack para aumentar el valor de la máxima temperatura
  */
 void ConfScreenView::PlusMaxTemp()
 {
 	this->presenter->ChangeMaxTempValue(true);
 }
 
+/***************************************************************/
 /**
- * @brief Método CallBack para dismiuir el valor de la
- * 		  máxima temperatura
+ * @brief Método CallBack para dismiuir el valor de la máxima temperatura
  */
 void ConfScreenView::MinusMaxTemp()
 {
 	this->presenter->ChangeMaxTempValue(false);
 }
 
+
 /***************************************************************/
 /**
- * @brief Método CallBack para aumentar el valor de la
- * 		  mínima temperatura
+ * @brief Método CallBack para aumentar el valor de la mínima temperatura
  */
 void ConfScreenView::PlusMinTemp()
 {
 	this->presenter->ChangeMinTempValue(true);
 }
 
+/***************************************************************/
 /**
- * @brief Método CallBack para dismiuir el valor de la
- * 		  mínima temperatura
+ * @brief Método CallBack para dismiuir el valor de la mínima temperatura
  */
 void ConfScreenView::MinusMinTemp()
 {

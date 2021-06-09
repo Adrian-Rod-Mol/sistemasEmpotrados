@@ -1,15 +1,21 @@
+/* Includes */
+/***************************************************************/
 #include <gui/model/Model.hpp>
 #include <gui/model/ModelListener.hpp>
 
 #include "cmsis_os2.h"
 #include "stm32f4xx_hal.h"
 #include <string.h>
-#include <stdio.h>  // Para el printf
+#include <stdio.h>
 
 
+/* Flags */
+/***************************************************************/
 #define FRAME_FLAG 				(0x01<<1)	/**< @brief Flag que inicia lectura del frame de la cámara */
 #define BUTTON_FLAG 			(0x01<<2)	/**< @brief Flag que indica que se ha pulsado el botón */
 
+
+/***************************************************************/
 extern "C" {
 
   #include "command.h"
@@ -30,9 +36,8 @@ extern "C" {
 
   extern osEventFlagsId_t 	userButtonEventHandle;
 
-
-
 }
+
 
 Model::Model() : modelListener(0)
 {
@@ -51,6 +56,8 @@ Model::Model() : modelListener(0)
 
 }
 
+
+/***************************************************************/
 /**
  * @brief Metodo que se ejecuta antes de cada refresco de pantalla. En el se observan las colas de mensajes
  *        y en caso de recibir alguno se procesa el mensaje correspondiente.
@@ -62,9 +69,6 @@ void Model::tick()
   /***************************************************************/
   float		sensorTemp 		= 30.5;
   float		cpuTemp 		= 30.5;
-  uint32_t 	value			= 0;
-
-
 
   float*	frame 			= NULL;
   float		midTemp			= 22.3;
@@ -80,15 +84,15 @@ void Model::tick()
   /* Top Bar */
   /***************************************************************/
   // Se obtienen los valores
-
-
   __HAL_TIM_SET_COUNTER(&htim2, 0);
 
   os_status = osMessageQueueGet(cpuTempQueueHandle, &cpuTemp, 0, 2);
   if (os_status == osOK) {
 	this->cpuTemp = cpuTemp;
 
+	// Si echo está activo, envía cada 500 ms la temperatura de la cpu por el puerto serie
 	if (this->echo) {
+		// Mutex que se encarga de detener el envío sí se está escribiendo por el puerto serie
 		osMutexStatus = osMutexAcquire(serialPortMutexHandle, 5);
 
 		if (osMutexStatus == osOK) {
@@ -131,6 +135,7 @@ void Model::tick()
 
   }
 
+  // Si el puntero está activado, muestra la media de los píxeles centrales en pantalla
   if (this->targetState && this->camState) {
 	  midTemp = ((this->frame[27] + this->frame[28] + this->frame[35] + this->frame[36]) / 4);
 	  this->modelListener->SetTargetValue(midTemp);
@@ -203,6 +208,8 @@ void Model::tick()
 
   }
 
+  /* Botón del usuario */
+  /***************************************************************/
   eventStatus = osEventFlagsWait(userButtonEventHandle, BUTTON_FLAG, osFlagsWaitAll, 2);
   if (eventStatus == BUTTON_FLAG) {
 	  printf(" \r\n");
@@ -211,22 +218,33 @@ void Model::tick()
 	  eventStatus = 0;
   }
 
-  value = __HAL_TIM_GET_COUNTER(&htim2);
+  /* Valor de los fps */
+  /***************************************************************/
+  // Hace la media de los fps cada cuarto de segundo
+  this->value += __HAL_TIM_GET_COUNTER(&htim2);
   this->count++;
-  if (count > 3) {
-	  this->screenFrames = (float)1000000 / value;
+  if (this->value > 250000) {
+	  this->screenFrames = (float)1000000 / (this->value / this->count);
+	  this->value = 0;
 	  this->count = 0;
   }
 }
 
 
-/*** GESTIÓN DE MENSAJES ***/
+/*** MENSAJES DE PUERTO SERIE ***/
 /***************************************************************/
+/**
+ * @brief Método que envía por el puerto serie la temperatura del termistor de la cámara
+ */
 void Model::send_cam_temp()
 {
 	printf("    CAM TEMPERATURE: %3.3f %cC.\r\n", this->sensorTemp, 0xB0);
 }
 
+/***************************************************************/
+/**
+ * @brief Método que notifica de que el comando envíado no es válido
+ */
 void Model::Unknow(uint8_t index)
 {
   PrintPointer();
@@ -234,18 +252,21 @@ void Model::Unknow(uint8_t index)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía por el puerto serie la descripción de los comandos
+ */
 void Model::SendHelp()
 {
   int commandIndex = 0;
-  PrintHeader(2);
+  PrintHeader(2);			// Cabecera del comando de ayuda (2)
+
   while (cli_command_list[commandIndex].key[0] != 0) {
-	  size_t len = strlen(cli_command_list[commandIndex].key);
+
 	  printf("    ");
-	  for (size_t i = 0; i < len; i++) {
-		  printf("%c",cli_command_list[commandIndex].key[i]);
-	  }
+	  printf(cli_command_list[commandIndex].key);			// Nombre del comando
+
 	  printf("    ");
-	  cli_command_list[commandIndex].service_routine();
+	  cli_command_list[commandIndex].service_routine();		// Descripción del comando
 
 	  commandIndex++;
   }
@@ -253,6 +274,11 @@ void Model::SendHelp()
 }
 
 /***************************************************************/
+/**
+ * @brief Método que activa o desactiva la cámara desde el puerto serie
+ *
+ * @param state - true: activa la imagen; false: desactiva la imagen
+ */
 void Model::TurnCam(bool state)
 {
 	this->ChangeBitmapState(!state);
@@ -260,18 +286,25 @@ void Model::TurnCam(bool state)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía por el puerto serie los valores obtenidos de los
+ * 		  píxeles de la cámara
+ *
+ * @param frame: variable en la que se almacena el puntero a los valores del frame
+ * @param raw - true: envía la imagen raw; false: envía la imagen en grados celcius
+ */
 void Model::SendCamFrame(float *frame, bool raw)
 {
 
   osStatus_t  os_status;
   osStatus_t  os_pool_status;
-  osEventFlagsSet(readFrameEventHandle, FRAME_FLAG);
+  osEventFlagsSet(readFrameEventHandle, FRAME_FLAG);				// Activa la tarea que lee la temperatura
 
-  os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 3000);
+  os_status = osMessageQueueGet(frameQueueHandle, &frame, 0, 3000);	// Espera al frame
 
   if (os_status == osOK) {
 
-	for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }
+	for (int i = 0; i < 64; i++) { this->frame[i] = frame[i]; }		// Lo almacena
 
 	if (raw) {
 		uint16_t rawFrame;
@@ -280,7 +313,7 @@ void Model::SendCamFrame(float *frame, bool raw)
 		for (int i = 0; i < 8; i++) {
 			printf(" \r\n  ");
 			for (int j = 0; j < 8; j++) {
-				rawFrame = (uint16_t)(this->frame[ (i * 8) + j ] / 0.25);
+				rawFrame = (uint16_t)(this->frame[ (i * 8) + j ] / 0.25);	// Deshace la conversión si se desean los datos raw
 				printf("%5d  ", rawFrame);
 			}
 		}
@@ -302,6 +335,7 @@ void Model::SendCamFrame(float *frame, bool raw)
   os_pool_status = osMemoryPoolFree(frame_MemPool, frame);
   if (os_pool_status != osOK) printf("Pool Failure\r\n");
 
+  // Si la cámara no está activa, bloquea la tarea
   if (!(this->camState)) {
 	  osEventFlagsClear(readFrameEventHandle, FRAME_FLAG);
   }
@@ -309,6 +343,12 @@ void Model::SendCamFrame(float *frame, bool raw)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que permite modificar por el puerto serie el valor del framerate al que
+ * 	 	  se obtienen los valores del frame de la cámara
+ *
+ * @param value: valor que se pretende asignar al framerate
+ */
 void Model::SetCamRate(int8_t value)
 {
 	if (value > 0 && value < 11) {
@@ -323,17 +363,28 @@ void Model::SetCamRate(int8_t value)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía por el puerto serie el framerate de la cámara
+ */
 void Model::GetCamRate()
 {
 	printf("    CAM FRAME RATE: %2d FPS.\r\n", this->fps);
 }
 
 /***************************************************************/
+/**
+ * @brief Método que permite modificar por el puerto serie el valor de la temperatura máxima
+ * 		  a la que se satura la paleta de la cámara (si el valor es válido)
+ *
+ * @param value: valor que se pretende asignar a la temperatura
+ */
 void Model::SerialSetMaxTemp(int8_t value)
 {
 	if (value > (this->minTemp + 5) && value < 60) {
+
 		this->maxTemp = value;
 		this->modelListener->SetMaxTempValue(this->maxTemp);
+
 		printf("    VALUE SET CORRECTLY\r\n");
 
 	} else {
@@ -343,17 +394,29 @@ void Model::SerialSetMaxTemp(int8_t value)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía por el puerto serie la temperatura máxima a la que
+ * 	      se satura la paleta de la cámara
+ */
 void Model::SerialGetMaxTemp()
 {
 	printf("    IMAGE SCALE MAX TEMP (%cC): %2d .\r\n", 0xB0, this->maxTemp);
 }
 
 /***************************************************************/
+/**
+ * @brief Método que permite modificar por el puerto serie el valor de la temperatura mínima
+ * 		  a la que se satura la paleta de la cámara (si el valor es válido)
+ *
+ * @param value: valor que se pretende asignar a la temperatura
+ */
 void Model::SerialSetMinTemp(int8_t value)
 {
 	if (value > 0 && value < (this->maxTemp - 5)) {
+
 		this->minTemp = value;
 		this->modelListener->SetMinTempValue(this->minTemp);
+
 		printf("    VALUE SET CORRECTLY\r\n");
 
 	} else {
@@ -363,21 +426,33 @@ void Model::SerialSetMinTemp(int8_t value)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía por el puerto serie la temperatura mínima de la escala
+ *        de la paleta de la cámara
+ */
 void Model::SerialGetMinTemp()
 {
 	printf("    IMAGE SCALE MIN TEMP (%cC): %2d .\r\n", 0xB0, this->minTemp);
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía por el puerto serie la temperatura de la cpu
+ */
 void Model::SendCPUTemp()
 {
 	printf("    CPU TEMPERATURE: %3.3f %cC.\r\n", this->cpuTemp, 0xB0);
 }
 
-/***************************************************************/
-/*** MÉTODOS DE LA PANTALLA PRINCIPAL ***/
 
+/*** MÉTODOS DE LA PANTALLA PRINCIPAL ***/
 /***************************************************************/
+/**
+ * @brief Método que modifica el valor del estado de la imagen de la cámara y
+ * 		  actualiza los fps en los que se mide el frame
+ *
+ * @param state - true: imagen activa (desactiva la imagen); false: imagen desactivada (la activa)
+ */
 void Model::ChangeBitmapState(bool state)
 {
 	osStatus_t osCamStatus;
@@ -385,22 +460,30 @@ void Model::ChangeBitmapState(bool state)
 
 	if (this->camState) {
 
-		this->frameDelay = 1000 / this->fps;
+		this->frameDelay = 1000 / this->fps; // Envía el valor del delay de la tarea
 		osCamStatus = osMessageQueuePut(framerateQueueHandle, ((void*) &this->frameDelay), 0, 0);
 
 		if (osCamStatus == osOK) {
+			// Activa el flag de lectura (el flag no se restablece,
+			// por lo que la tarea se mantiene siempre activa)
 			osEventFlagsSet(readFrameEventHandle, FRAME_FLAG);
 		}
 
-		this->modelListener->SetTargetState(this->targetState);
+		this->modelListener->SetTargetState(this->targetState);  	// Activa el puntero si es necesario
+
 	} else {
-		osEventFlagsClear(readFrameEventHandle, FRAME_FLAG);
+		osEventFlagsClear(readFrameEventHandle, FRAME_FLAG);		// Borra el flag deteniendo la lectura de la cámara
 
 		this->modelListener->SetTargetState(false);
 	}
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía el valor de los píxeles de la cámara cuando se
+ * 		  pulsa el botón de la view si esta se encuentra activa
+ *
+ */
 void Model::SendScreenshot()
 {
 	if (this->camState) {
@@ -415,6 +498,12 @@ void Model::SendScreenshot()
 }
 
 /***************************************************************/
+/**
+ * @brief Método que modifica el valor del estado del puntero que muestra
+ * 		  la temperatura
+ *
+ * @param state - true: puntero activo; false: puntero desactivado
+ */
 void Model::ChangeTargetState(bool state)
 {
 	if (this->camState) {
@@ -422,9 +511,8 @@ void Model::ChangeTargetState(bool state)
 	}
 }
 
-/***************************************************************/
-/*** MÉTODOS DE LA PANTALLA DE CONFIGURACIÓN ***/
 
+/*** MÉTODOS DE LA PANTALLA DE CONFIGURACIÓN ***/
 /***************************************************************/
 /**
  * @brief Método que modifica el valor de los fps si se encuentran entre
@@ -504,8 +592,9 @@ void Model::ChangeMinTempValue(bool operation)
 	}
 }
 
-/***************************************************************/
+
 /*** GETTERS Y SETTERS ***/
+/***************************************************************/
 
 /* Variables comunes */
 /***************************************************************/
@@ -520,6 +609,7 @@ bool Model::GetCamState()
 {
 	return this->camState;
 }
+
 /***************************************************************/
 bool Model::GetTargetState()
 {

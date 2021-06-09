@@ -1,8 +1,10 @@
 /*
- * parser.h
+ * cli.h
  *
  *  Created on: 25 abr. 2021
  *      Author: edavidfs
+ *
+ *  Modified by: Adrian-Rod-Mol
  */
 
 #ifndef APPLICATION_USER_PARSER_H_
@@ -12,7 +14,7 @@
 
 void 	cli_init();
 void 	camInit();
-int8_t MessageToValue(uint8_t *message);
+int8_t 	MessageToValue(uint8_t *message);
 
 
 

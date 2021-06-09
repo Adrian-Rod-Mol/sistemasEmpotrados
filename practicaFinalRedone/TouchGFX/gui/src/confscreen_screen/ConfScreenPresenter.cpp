@@ -9,6 +9,7 @@ ConfScreenPresenter::ConfScreenPresenter(ConfScreenView& v)
 
 void ConfScreenPresenter::activate()
 {
+	// Se usa para conocer el valor de la pantalla en la que se encuentra el programa
 	this->model->SetCurrentScreen(2);
 
 	this->SetFPSValue(this->model->GetFPS());
@@ -23,6 +24,13 @@ void ConfScreenPresenter::deactivate()
 }
 
 /***************************************************************/
+/**
+ * @brief Método que envía los valores del top bar a la vista
+ *
+ * @param cpuTemp: 		valor de la temperatura del procesador
+ * @param sensorTemp: 	valor de la temperatura del sensor de la cámara
+ * @param fps: 			valor de los frame por segundo de la pantalla
+ */
 void ConfScreenPresenter::SetConfTopBar(float cpuTemp, float sensorTemp, float fps)
 {
 	this->view.HandleTopBarData(cpuTemp, sensorTemp, fps);
@@ -30,9 +38,9 @@ void ConfScreenPresenter::SetConfTopBar(float cpuTemp, float sensorTemp, float f
 
 /***************************************************************/
 /**
- * @brief Método que actualiza el valor en la vista de los fps de la cámara
+ * @brief Método que modifica la variable de control de los fps y la actualiza en la vista
  *
- * @param fps: valor de los frame por segundo configurados en la cámara AMG8833
+ * @param operation - true: aumenta la variable, false: disminuye la variable
  */
 void ConfScreenPresenter::ChangeFPSValue(bool operation)
 {
@@ -41,6 +49,12 @@ void ConfScreenPresenter::ChangeFPSValue(bool operation)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que modifica la variable de control de la máxima temperatura de saturación
+ *        y la actualiza en la vista
+ *
+ * @param operation - true: aumenta la variable, false: disminuye la variable
+ */
 void ConfScreenPresenter::ChangeMaxTempValue(bool operation)
 {
 	this->model->ChangeMaxTempValue(operation);
@@ -48,6 +62,12 @@ void ConfScreenPresenter::ChangeMaxTempValue(bool operation)
 }
 
 /***************************************************************/
+/**
+ * @brief Método que modifica la variable de control de la mínima temperatura de saturación
+ *        y la actualiza en la vista
+ *
+ * @param operation - true: aumenta la variable, false: disminuye la variable
+ */
 void ConfScreenPresenter::ChangeMinTempValue(bool operation)
 {
 	this->model->ChangeMinTempValue(operation);

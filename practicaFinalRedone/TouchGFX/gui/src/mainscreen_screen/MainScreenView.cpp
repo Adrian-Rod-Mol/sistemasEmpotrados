@@ -12,6 +12,13 @@ MainScreenView::MainScreenView()
 
 }
 
+/***************************************************************/
+/**
+ * @brief Metodo que se ejecuta al activarse la pantalla. En el se crea el bitmap para
+ * 		  el frame de la cámara, se le asigna la caché y se le asigna una paleta
+ * 		  y unos colores dummy
+ *
+ */
 void MainScreenView::setupScreen()
 {
     MainScreenViewBase::setupScreen();
@@ -82,7 +89,7 @@ void MainScreenView::tearDownScreen()
 /* Botones */
 /***************************************************************/
 /**
- * @brief Método que cambia la visibilidad del bitmap
+ * @brief Método callback relacionado con la visibilidad del bitmap
  */
 void MainScreenView::ToggleCamBitmap()
 {
@@ -91,7 +98,7 @@ void MainScreenView::ToggleCamBitmap()
 
 /***************************************************************/
 /**
- * @brief Método que maneja el botón de captura de pantalla
+ * @brief Método callback relacionado con la captura de la imagen
  */
 void MainScreenView::CamScreenshot()
 {
@@ -100,7 +107,7 @@ void MainScreenView::CamScreenshot()
 
 /***************************************************************/
 /**
- * @brief Método que maneja el puntero de la cámara
+ * @brief Método callback relacionado con la visibilidad del puntero
  */
 void MainScreenView::ToggleTargetTemp()
 {
@@ -140,7 +147,9 @@ void MainScreenView::HandleCamBitmap()
 
 /***************************************************************/
 /**
- * @brief Muestra u oculta el bitmap
+ * @brief Muestra u oculta el bitmap y modifica el estado del botón asociado
+ *
+ * @param state - true: muestra el bitmap, false: oculta el bitmap
  */
 void MainScreenView::HandleCamState(bool state)
 {
@@ -155,7 +164,9 @@ void MainScreenView::HandleCamState(bool state)
 /***************************************************************/
 /**
  * @brief Muestra u oculta tanto el puntero como el valor de la
- * temperatura central
+ * 		  temperatura central
+ *
+ * @param state - true: muestra los widget, false: oculta los widget
  */
 void MainScreenView::HandleTargetState(bool state)
 {
@@ -168,7 +179,9 @@ void MainScreenView::HandleTargetState(bool state)
 
 /***************************************************************/
 /**
- * @brief Actualiza el valor de la temperatura del puntero
+ * @brief Método que asigna el valor de la temperatura media del bitmap
+ *
+ * @param temperature: valor de la temperatura media
  */
 void MainScreenView::HandleTargetTemp(float temperature)
 {
