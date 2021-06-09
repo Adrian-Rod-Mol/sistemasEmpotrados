@@ -22,6 +22,9 @@ la cámara y los frames por segundo de refresco de la pantalla.
 Además de estas funcionalidades se puede acceder a la interfaz por comandos enviados a través de la USART con la que cuenta la plataforma de desarrollo, permitiendo
 así controlar la interfaz y variar los parámetros con los que cuenta. Estos comandos se detallan más adelante en este documento.
 
+El control de la plataforma de desarrollo se realiza usando el sistema operativo en tiempo real **FreeRTOS**, que es tambien usado por el **TouchGFX** y al que se
+accede a través de la API **CMSIS-RTOS-V2**.
+
 ### Lista de comandos CLI
 ```
 Nombre         Descripción
@@ -43,3 +46,15 @@ cpu echo on  - Envia la temperatura de la cpu cada 500 ms
 cpu echo off - Deja de enviar la temperatura de la cpu cada 500 ms
 
 ```
+### Lista de archivos usados
+
+> A excepción del archivo de **board.c**, todos los archivos cuentan con un archivo .h/.hpp en el que se declaran las variables y funciones que se usan
+> luego en los archivos .c/.cpp. Por tanto, solo se mencionará en la siguiente lista estos últimos, pero aun así se informa al lector de que estos archivos
+> existen y de que cuentan con el mismo nombre que el archivo de la lista pero cambiando su terminación.
+
++ **Archivos generados por el TouchGFX**:
+  1. **Model.cpp:** clase central del programa que sirve para gestionar los datos ofrecidos tanto por el sensor termográfico como por las tareas del sitema operativo, sirviendo además de puente entre estas tareas y la interfaz gráfica.
+  2. **MainScreenPresenter.cpp:** presenter de la pantalla principal. Se encarga de comunicar al modelo los cambios que han ocurrido en la vista para que este actue en cosnecuencia y además muestra en la vista los cambios ocurridos en el modelo. En esta clase también se genera el bitmap a partir del frame obtenido de la cámara.
+  3. **MainScreenView.cpp:** vista de la pantalla principal. Se encarga de avisar al presenter de los cambios de estado de los botones de la pantalla táctil y de mostrar, ocultar y renderizar los widget que se deben mostrar en la pantalla. También se crea el bitmap y se reserva y asigna la caché que le corresponde.
+  4. **ConfScreenPresenter.cpp:** presenter de la pantalla de configuración. Se encarga de comunicar al modelo cuando se han pulsado los botones de la vista para que modifique los parámetros de configuración de la cámara y además se encarga de enviar a la vista dichos parámetros de configuración para que esta los muestre.
+  5. **ConfScreenView.cpp:** vista de la pantalla de configuración. Se encarga de transmitir al presenter cuando se pulsa alguno de los botones de la pantalla táctil y de cambiar el estado de los parámetros relacionados con estos botones.
