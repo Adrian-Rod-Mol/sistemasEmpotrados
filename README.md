@@ -44,6 +44,14 @@ Tanto para la pantalla principal como la pantalla de configuración el modelo mo
 
 A través del *Callback* de la interrupoción de carácter recibido por el puerto serie se van asignando valores a la **charQueue**, que son almacenados por la **CLI Processing Task**. Cuando esta tarea detecta que ha finalizado el envío de información a través del puerto serie, procesa el comando recibido y le envía el mensaje a través de la cola **messageQueue** al *tick* del **Modelo**, que se encargará de procesarlo y de realizar la acción correspondiente, normalmente respondiendo a traves del puerto serie. Para que no se produzcan interrupciones, cada vez que se recibe un carácter por el puerto serie se usa el **serialPortMutex** para que el envío de datos desde el modelo no interrumpa la escritura.
 
+#### Temperatura de la CPU
+
+Cada 500 ticks del sistema, la tarea **CPU Temperature Task** mide a través del canal del **ADC** al que está conectado el sensor interno de temperatura de la placa de desarrollo la temperatura de la CPU y la envía al modelo a través de la cola **cpuTempQueue**.
+
+#### Botón del usuario
+
+Cada vez que se detecta que se ha pulsado el botón azul de la placa a través del *Callback* del GPIO que le corresponde, se activa el flag **userButtonEvent** que indica al modelo que debe enviar por el puerto serie el frame de la cámara.
+
 ### Lista de comandos CLI
 ```
 Nombre         Descripción
