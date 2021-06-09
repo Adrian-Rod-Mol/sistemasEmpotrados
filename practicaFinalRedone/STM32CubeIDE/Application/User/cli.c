@@ -5,6 +5,11 @@
  *      Author: edavidfs
  *
  *  Modified by: Adrian-Rod-Mol
+ * 
+ *  @brief este archivo contiene las tareas que se encargan de gestionar los valores recibidos por el puerto serie. 
+ *         En el se inicializa la interrupción que se ctiva cuando llega un carácter por el puerto serie, se crea el 
+ *         pool de memoria en el que se guardan los mensajes que se envían al modelo y se procesan los mensajes llegados 
+ *         por el puerto serie.
  */
 
 /* Includes */
