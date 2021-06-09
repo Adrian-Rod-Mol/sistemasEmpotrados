@@ -20,6 +20,26 @@ Ambas pantallas cuentan con una barra superior que muestra datos relacionados co
 la cámara y los frames por segundo de refresco de la pantalla.
 
 Además de estas funcionalidades se puede acceder a la interfaz por comandos enviados a través de la USART con la que cuenta la plataforma de desarrollo, permitiendo
-así controlar la interfaz y variar los parámetros con los que cuenta. Estos comandos se detallan al final de este documento.
+así controlar la interfaz y variar los parámetros con los que cuenta. Estos comandos se detallan más adelante en este documento.
 
+### Lista de comandos CLI
+```
+Nombre         Descripción
 
+help         - Solicitar comandos del programa
+cam on       - Enciende la camara
+cam off      - Apaga la camara
+cam temp     - Solicitar datos Temperatura
+cam frame    - Solicitar datos de la matriz de temperatura
+cam raw      - Solicitar datos raw de la matriz de temperatura
+cam set rate - Establece el framerate de la camara
+cam get rate - Devuelve el framerate de la camara
+set max temp - Establece la temperatura maxima de la escala del frame
+get max temp - Devuelve la temperatura maxima de la escala del frame
+set min temp - Establece la temperatura minima de la escala del frame
+get min temp - Devuelve la temperatura minima de la escala del frame
+cpu temp     - Devuelve la temperatura de la cpu
+cpu echo on  - Envia la temperatura de la cpu cada 500 ms
+cpu echo off - Deja de enviar la temperatura de la cpu cada 500 ms
+
+```
