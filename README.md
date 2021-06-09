@@ -24,8 +24,26 @@ así controlar la interfaz y variar los parámetros con los que cuenta. Estos co
 
 El control de la plataforma de desarrollo se realiza usando el sistema operativo en tiempo real **FreeRTOS**, que es tambien usado por el **TouchGFX** y al que se
 accede a través de la API **CMSIS-RTOS-V2**.
+
 ### Esquema del programa
 ![Esquema del programa](/img/esquema.png)
+
+### Descripción del esquema de programa
+
+Como se puede observar en el esquema, el *tick* del modelo es el elemento central del programa. A él le llegan una serie de entradas, procesa los datos y genera una serie de salidas. Para realizar esta comunicación de valores se disponen de varias herramientas del sistema operativo que permiten intercambiar información en tre tareas. Teniendo en cuenta esto, el esquema se puede dividir entre entradas al modelo, salidas del modelo y elementos de comunicación.
+
+#### Comunicación con la cámara.
+
+La comunicación con la cámara se hace a través de las tareas **CAM Temperature Task** y **CAM Frame Task**. La primera de estas tareas envía hacia el modelo cada 500 ticks el valor del termistor de la cámara a través de la cola **temp_queue**. La segunda de estas tareas envía periódicamente, dependiendo de los ticks del sistema que se le establezcan a través de la cola **framerateQueue**, el valor del *frame* que contiene todos los píxeles de la cámara a través de la cola **frameQueue**. Para que esta tarea comience o pare de enviar mensajes por la cola, se debe activar desde el modelo el evento **readFrameEvent**. EL flag de este evento no se borrará automáticamente, por lo que el *tick* del modelo se encargará de borrarlo cuando se desee interrumpir la comunicación por el puerto serie. Para que las dos tareas anteriormente mencionadas no provoquen errores al intentar acceder simultáneamente a la comunicación con la cámara, se hace uso del *mutex* **camAccessMutex**.
+
+#### Comunicación con la interfaz gráfica
+
+Tanto para la pantalla principal como la pantalla de configuración el modelo modifica los parámetros a partir de las órdenes que llegan desde la vista y a través del presenter y envía, pasando primero por el **ModelListener**, y a través del presenter, los cambios que debe efectuar la vista para que se muestre el contenido correspondiente en la interfaz de la pantalla.
+
+#### Comunicación por el puerto serie
+
+A través del *Callback* de la interrupoción de carácter recibido por el puerto serie se van asignando valores a la **charQueue**, que son almacenados por la **CLI Processing Task**. Cuando esta tarea detecta que ha finalizado el envío de información a través del puerto serie, procesa el comando recibido y le envía el mensaje a través de la cola **messageQueue** al *tick* del **Modelo**, que se encargará de procesarlo y de realizar la acción correspondiente, normalmente respondiendo a traves del puerto serie. Para que no se produzcan interrupciones, cada vez que se recibe un carácter por el puerto serie se usa el **serialPortMutex** para que el envío de datos desde el modelo no interrumpa la escritura.
+
 ### Lista de comandos CLI
 ```
 Nombre         Descripción
@@ -59,8 +77,10 @@ cpu echo off - Deja de enviar la temperatura de la cpu cada 500 ms
   3. **MainScreenView.cpp:** vista de la pantalla principal. Se encarga de avisar al presenter de los cambios de estado de los botones de la pantalla táctil y de mostrar, ocultar y renderizar los widget que se deben mostrar en la pantalla. También se crea el bitmap y se reserva y asigna la caché que le corresponde.
   4. **ConfScreenPresenter.cpp:** presenter de la pantalla de configuración. Se encarga de comunicar al modelo cuando se han pulsado los botones de la vista para que modifique los parámetros de configuración de la cámara y además se encarga de enviar a la vista dichos parámetros de configuración para que esta los muestre.
   5. **ConfScreenView.cpp:** vista de la pantalla de configuración. Se encarga de transmitir al presenter cuando se pulsa alguno de los botones de la pantalla táctil y de cambiar el estado de los parámetros relacionados con estos botones.
+  6. **TopBar.cpp:** contenedor personalizado que muestra el valor de la temperatura de la cpu, el de el termistor de la cámara y el de los frames por segundo siempre y cuando la vista correspondiente llame a las funciones de este contenedor a través del widget creado en ella.
+ 
 + **Archivos para la gestión de tareas**
   1. **command.c:** este archivo contiene la definicíon de todos los comandos admitidos por el puerto serie, las rutinas de servicio que se usan para describir los comandos y algunas funciones usadas para mejorar la apariencia de la interfaz del puerto serie. En su header se define el *struct* usado para crear los comandos.
-  2. **cli.c** este archivo contiene las tareas que se encargan de gestionar los valores recibidos por el puerto serie. En el se inicializa la interrupción que se ctiva cuando llega un carácter por el puerto serie, se crea el *pool* de memoria en el que se guardan los mensajes que se envían al modelo y se procesan los mensajes llegados por el puerto serie.
+  2. **cli.c** este archivo contiene las tareas que se encargan de gestionar los valores recibidos por el puerto serie. En el se inicializa la interrupción que se ctiva cuando llega un carácter por el puerto serie, se crea el *pool* de memoria en el que se guardan los mensajes que se envían al modelo y se procesan los mensajes llegados por el puerto serie. 
   3. **camera.c** este archivo contiene las tareas que se encargan de leer tanto la temperatura del termistor de la cámara como el registro en el que se guardan los píxeles del sensor infrarojo de la cámara.
   4. **board.c** este archivo contiene las tareas relacionadas con el *hardware* de la placa. En él se define la tarea en la que se lee la temperatura de la CPU a través del ADC conectado al sensor interno de la placa, se envía esta temperatura al modelo y se define el *Callback* que atiende al botón del usuario y que activa el evento que envía por el puerto serie los datos de los píxeles del frame de la cámara.
