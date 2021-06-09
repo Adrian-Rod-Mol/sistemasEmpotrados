@@ -25,7 +25,7 @@ así controlar la interfaz y variar los parámetros con los que cuenta. Estos co
 El control de la plataforma de desarrollo se realiza usando el sistema operativo en tiempo real **FreeRTOS**, que es tambien usado por el **TouchGFX** y al que se
 accede a través de la API **CMSIS-RTOS-V2**.
 ### Esquema del programa
-![Esquema del programa](file:///home/admaro/Documents/master/embSystem/esquema.png)
+![Esquema del programa](https://raw.githubusercontent.com/Adrian-Rod-Mol/sistemasEmpotrados/blob/master/img/esquema.png)
 ### Lista de comandos CLI
 ```
 Nombre         Descripción
