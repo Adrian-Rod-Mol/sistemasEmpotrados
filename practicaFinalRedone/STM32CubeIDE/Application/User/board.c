@@ -3,6 +3,11 @@
  *
  *  Created on: 7 jun. 2021
  *      Author: Adrian-Rod-Mol
+ *
+ *  @brief este archivo contiene las tareas relacionadas con el hardware de la placa. En él se define la tarea
+ *         en la que se lee la temperatura de la CPU a través del ADC conectado al sensor interno de la placa,
+ *         se envía esta temperatura al modelo y se define el Callback que atiende al botón del usuario y que activa 
+ *         el evento que envía por el puerto serie los datos de los píxeles del frame de la cámara.
  */
 
 /* Includes */
